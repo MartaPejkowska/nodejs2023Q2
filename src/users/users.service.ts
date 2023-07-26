@@ -6,27 +6,30 @@ import {
   ForbiddenException,
   HttpCode,
 } from '@nestjs/common';
-import { User } from './interfaces/User.interface';
+// import { User } from './interfaces/User.interface';
+import { UserEntity } from './entity/user.entity';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { isIdValid } from 'src/utils/isIdValid';
 
-const regexExp =
-  /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
+// const regexExp =
+  // /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
 
 @Injectable()
 export class UsersService {
-  users: User[] = [];
+  users: UserEntity[] = [];
 
-  findAll(): User[] {
+  findAll(): UserEntity[] {
     return this.users;
   }
 
-  async findOne(id: string): Promise<User | string> {
-    if (!regexExp.test(id)) {
-      throw new BadRequestException('Not valid id');
-    }
-    const user = await this.users.find((product) => product.id === id);
+  async findOne(id: string): Promise<UserEntity | string> {
+    // if (!regexExp.test(id)) {
+    //   throw new BadRequestException('Not valid id');
+    // }
+    isIdValid(id)
+    const user = await this.users.find((user) => user.id === id);
     if (!user) {
       throw new NotFoundException('Not found');
     }
@@ -52,9 +55,10 @@ export class UsersService {
   }
 
   async update(id: string, body: UpdatePasswordDto) {
-    if (!regexExp.test(id)) {
-      throw new BadRequestException('Not valid id');
-    }
+    // if (!regexExp.test(id)) {
+    //   throw new BadRequestException('Not valid id');
+    // }
+    isIdValid(id)
     const userIndex = await this.users.findIndex((user) => user.id === id);
     const user = this.users[userIndex];
 
@@ -78,9 +82,10 @@ export class UsersService {
 
   @HttpCode(204)
   async delete(id: string) {
-    if (!regexExp.test(id)) {
-      throw new BadRequestException('Not valid id');
-    }
+    // if (!regexExp.test(id)) {
+    //   throw new BadRequestException('Not valid id');
+    // }
+    isIdValid(id)
     const userIndex = await this.users.findIndex((user) => user.id === id);
 
     if (!userIndex) {
