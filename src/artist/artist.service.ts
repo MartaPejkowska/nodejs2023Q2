@@ -8,13 +8,11 @@ import { UpdateArtistDto } from './dto/update-artist.dto';
 import { ArtistEntity } from './entities/artist.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { isIdValid } from 'src/utils/isIdValid';
-
-// const regexExp =
-//   /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
+import { artists } from 'src/db/database';
 
 @Injectable()
 export class ArtistService {
-  artists: ArtistEntity[] = [];
+  artists: ArtistEntity[] = artists;
   create(createArtistDto: CreateArtistDto) {
     const { name, grammy } = createArtistDto;
     const artist = {
@@ -66,16 +64,12 @@ export class ArtistService {
   }
 
   async remove(id: string) {
-    // if (!regexExp.test(id)) {
-    //   throw new BadRequestException('Not valid id');
-    // }
-    console.log(id)
-    // isIdValid(id);
+
+    isIdValid(id);
     const artistIndex = await this.artists.findIndex(
       (artist) => artist.id === id,
     );
-    console.log(artistIndex)
-    if (!artistIndex) {
+    if (artistIndex === -1) {
       throw new NotFoundException('Not found');
     }
     this.artists.splice(artistIndex, 1);

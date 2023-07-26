@@ -6,59 +6,51 @@ import {
   ForbiddenException,
   HttpCode,
 } from '@nestjs/common';
-// import { User } from './interfaces/User.interface';
 import { UserEntity } from './entity/user.entity';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { isIdValid } from 'src/utils/isIdValid';
-
-// const regexExp =
-  // /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
+import { users } from 'src/db/database';
 
 @Injectable()
 export class UsersService {
-  users: UserEntity[] = [];
+  users: UserEntity[] = users;
 
   findAll(): UserEntity[] {
     return this.users;
   }
 
-  async findOne(id: string): Promise<UserEntity | string> {
-    // if (!regexExp.test(id)) {
-    //   throw new BadRequestException('Not valid id');
-    // }
-    isIdValid(id)
+  async findOne(id: string): Promise<Partial<UserEntity> | string> {
+    isIdValid(id);
     const user = await this.users.find((user) => user.id === id);
     if (!user) {
       throw new NotFoundException('Not found');
     }
-    return user;
+    const { password, ...userWP } = user;
+    return userWP;
   }
 
   async create(@Body() createUserDto: CreateUserDto) {
-    // const date = new Date();
-    const { login, password } = createUserDto;
-    if (!login || !password) {
+    if (!createUserDto.login || !createUserDto.password) {
       throw new BadRequestException('Login and password are required');
     }
     const user = {
       id: uuidv4(),
-      login,
-      password,
+      login: createUserDto.login,
+      password: createUserDto.password,
       version: 1,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
     this.users.push(user);
-    return user;
+    const { password, ...userWP } = user;
+
+    return userWP;
   }
 
   async update(id: string, body: UpdatePasswordDto) {
-    // if (!regexExp.test(id)) {
-    //   throw new BadRequestException('Not valid id');
-    // }
-    isIdValid(id)
+    isIdValid(id);
     const userIndex = await this.users.findIndex((user) => user.id === id);
     const user = this.users[userIndex];
 
@@ -77,20 +69,20 @@ export class UsersService {
     updatedUser.version = updatedUser.version + 1;
 
     this.users[userIndex] = updatedUser;
-    return this.users[userIndex];
+    const { password, ...userWP } = updatedUser;
+    return userWP;
   }
 
   @HttpCode(204)
   async delete(id: string) {
-    // if (!regexExp.test(id)) {
-    //   throw new BadRequestException('Not valid id');
-    // }
-    isIdValid(id)
-    const userIndex = await this.users.findIndex((user) => user.id === id);
+    isIdValid(id);
+    const userIndex = this.users.findIndex((user) => user.id === id);
+    console.log(userIndex);
 
-    if (!userIndex) {
+    if (userIndex === -1) {
       throw new NotFoundException('Not found');
+    } else {
+      this.users.splice(userIndex, 1);
     }
-    this.users.splice(userIndex, 1);
   }
 }
