@@ -58,6 +58,10 @@ export class UsersService {
       throw new NotFoundException('Not found');
     }
 
+    if( !body.oldPassword || !body.newPassword || typeof body.oldPassword!=='string' || typeof body.newPassword !== 'string'){
+      throw new BadRequestException('Old password and new password are required and must be a string')
+    }
+
     if (user.password !== body.oldPassword) {
       throw new ForbiddenException('Wrong password');
     }
@@ -73,7 +77,7 @@ export class UsersService {
     return userWP;
   }
 
-  @HttpCode(204)
+
   async delete(id: string) {
     isIdValid(id);
     const userIndex = this.users.findIndex((user) => user.id === id);

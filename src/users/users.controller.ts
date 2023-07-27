@@ -56,7 +56,7 @@ export class UsersController {
 
   @Delete(':id')
   @Header('Content-Type', 'application/json')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(204)
   delete(@Param('id') id: string) {
     return this.usersService.delete(id);
   }
