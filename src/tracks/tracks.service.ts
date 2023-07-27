@@ -22,6 +22,17 @@ export class TracksService {
             albumId,
             duration,
         };
+
+        if (
+            typeof createTrackDto.name !== 'string' ||
+            // typeof createTrackDto.albumId !== 'string' ||
+            // typeof createTrackDto.artistId !== 'string' ||
+            typeof createTrackDto.duration !== 'number' ||
+            !createTrackDto.name || !createTrackDto.duration
+        ) {
+            throw new BadRequestException('Duration should be number');
+        }
+
         this.tracks.push(track);
         return track;
     }
@@ -51,31 +62,33 @@ export class TracksService {
         }
 
         const updatedTrack = { ...track };
-        if(updateTrackDto.name){
-          if(typeof updateTrackDto.name !== 'string'){
-            throw new BadRequestException('Name should be string')
-          }
+        if (updateTrackDto.name) {
+            if (typeof updateTrackDto.name !== 'string') {
+                throw new BadRequestException('Name should be string');
+            }
         }
-        if(updateTrackDto.albumId){
-          if( typeof updateTrackDto.albumId !== 'string'){
-            throw new BadRequestException('AlbumId should be string')
-          }
+        if (updateTrackDto.albumId) {
+            if (typeof updateTrackDto.albumId !== 'string') {
+                throw new BadRequestException('AlbumId should be string');
+            }
         }
-        if(updateTrackDto.artistId){
-          if( typeof updateTrackDto.artistId !== 'string'){
-            throw new BadRequestException('ArtistId should be string')
-          }
+        if (updateTrackDto.artistId) {
+            if (typeof updateTrackDto.artistId !== 'string') {
+                throw new BadRequestException('ArtistId should be string');
+            }
         }
-        if(updateTrackDto.duration){
-          if( typeof updateTrackDto.duration !== 'number'){
-            throw new BadRequestException('Duration should be number')
-          }
+        if (updateTrackDto.duration) {
+            if (typeof updateTrackDto.duration !== 'number') {
+                throw new BadRequestException('Duration should be number');
+            }
         }
 
         updatedTrack.name = updateTrackDto.name || updatedTrack.name;
-        updatedTrack.artistId = updateTrackDto.artistId || updatedTrack.artistId;
+        updatedTrack.artistId =
+            updateTrackDto.artistId || updatedTrack.artistId;
         updatedTrack.albumId = updateTrackDto.albumId || updatedTrack.albumId;
-        updatedTrack.duration = updateTrackDto.duration || updatedTrack.duration;
+        updatedTrack.duration =
+            updateTrackDto.duration || updatedTrack.duration;
 
         this.tracks[trackIndex] = updatedTrack;
         return this.tracks[trackIndex];
@@ -90,6 +103,6 @@ export class TracksService {
             throw new NotFoundException('Not found');
         }
         this.tracks.splice(trackIndex, 1);
-        return `Removed track with id: ${id}`
+        return `Removed track with id: ${id}`;
     }
 }
