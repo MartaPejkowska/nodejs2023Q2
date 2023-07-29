@@ -15,16 +15,16 @@ import { tracks } from 'src/db/database';
 export class AlbumsService {
     albums: AlbumEntity[] = albums;
     create(createAlbumDto: CreateAlbumDto) {
-        // const artistId = createAlbumDto.artistId;
-        // isIdValid(artistId);
         const name = createAlbumDto.name;
         const year = createAlbumDto.year;
         const artistId = createAlbumDto.artistId;
 
         if (
-            typeof name !== 'string' ||
-            typeof year !== 'number' ||
-            typeof artistId !== 'string'
+            // typeof name !== 'string' ||
+            // typeof year !== 'number' ||
+            // typeof artistId !== 'string' ||
+            !name ||
+            !year
         ) {
             throw new BadRequestException('Wrong data');
         }
@@ -34,7 +34,8 @@ export class AlbumsService {
             year: year,
             artistId: artistId,
         };
-        albums.push(album);
+        this.albums.push(album);
+        return album;
     }
 
     findAll() {
@@ -43,7 +44,7 @@ export class AlbumsService {
 
     async findOne(id: string) {
         isIdValid(id);
-        const album = await albums.find((album) => album.id === id);
+        const album = await this.albums.find((album) => album.id === id);
 
         if (!album) {
             throw new NotFoundException('Not found');
@@ -64,33 +65,25 @@ export class AlbumsService {
         if (!album) {
             throw new NotFoundException('Not found');
         }
+        const {name, year, artistId} = updateAlbumDto
 
         const updatedAlbum = { ...album };
         if (updateAlbumDto.name) {
-            if (typeof updateAlbumDto.name !== 'string') {
-                throw new BadRequestException('Invalid data');
+            if (typeof name !== 'string') {
+                throw new BadRequestException('Name should be a atring');
             }
         }
         if (updateAlbumDto.year) {
-            // @ts-ignore
-            if (updateAlbumDto.year !== 'number') {
-                throw new BadRequestException('Invalid data');
+
+            if (typeof year !== 'number') {
+                throw new BadRequestException('Year should be a number');
             }
         }
         if (updateAlbumDto.artistId) {
-            if (updateAlbumDto.artistId !== 'string') {
-                throw new BadRequestException('Invalid data');
+            if (typeof artistId !== 'string' ) {
+                throw new BadRequestException('ArtistId should be a string or null');
             }
         }
-
-        // if (
-        //     typeof updateAlbumDto.name !== 'string' ||
-        //     typeof updateAlbumDto.year !== 'number' ||
-        //     typeof updateAlbumDto.artistId !== 'string'
-        //     // !updateAlbumDto.name || !updateAlbumDto.year
-        // ){
-        //   throw new BadRequestException('Invalid data')
-        // }
 
         updatedAlbum.name = updateAlbumDto.name || updatedAlbum.name;
         updatedAlbum.year = updateAlbumDto.year || updatedAlbum.year;
