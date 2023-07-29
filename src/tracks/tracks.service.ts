@@ -28,7 +28,8 @@ export class TracksService {
             // typeof createTrackDto.albumId !== 'string' ||
             // typeof createTrackDto.artistId !== 'string' ||
             typeof createTrackDto.duration !== 'number' ||
-            !createTrackDto.name || !createTrackDto.duration
+            !createTrackDto.name ||
+            !createTrackDto.duration
         ) {
             throw new BadRequestException('Duration should be number');
         }
