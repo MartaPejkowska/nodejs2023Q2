@@ -60,9 +60,9 @@ export class UsersService {
 
         if (
             !body.oldPassword ||
-            !body.newPassword ||
+            !body.newPassword
             // typeof body.oldPassword !== 'string' ||
-            typeof body.newPassword !== 'string'
+            // typeof body.newPassword !== 'string'
         ) {
             throw new BadRequestException(
                 'Old password and new password are required and must be a string',

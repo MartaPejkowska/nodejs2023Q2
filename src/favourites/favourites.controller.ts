@@ -5,7 +5,7 @@ import {
     Param,
     Delete,
     Inject,
-    HttpCode,
+    HttpCode
 } from '@nestjs/common';
 import { FavouritesService } from './favourites.service';
 import { CreateFavouriteDto } from './dto/create-favourite.dto';
@@ -20,8 +20,11 @@ interface paramsDTO {
 @Controller('favs')
 export class FavouritesController {
     constructor(
-        private readonly favouritesService: FavouritesService, // private readonly albumService: AlbumsService, // private readonly artistService: ArtistService,
+        private readonly favouritesService: FavouritesService,
+        // private readonly albumService: AlbumsService,
+        // private readonly artistService: ArtistService,
     ) {}
+
 
     @Get()
     findAll() {
@@ -32,6 +35,7 @@ export class FavouritesController {
     create(@Param() params: paramsDTO) {
         return this.favouritesService.create(params);
     }
+
 
     @Delete(':func/:id')
     @HttpCode(204)

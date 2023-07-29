@@ -6,8 +6,8 @@ import { ArtistModule } from 'src/artist/artist.module';
 import { AlbumsModule } from 'src/albums/albums.module';
 
 @Module({
-    imports: [TracksModule, ArtistModule, AlbumsModule],
-    controllers: [FavouritesController],
-    providers: [FavouritesService],
+  imports:[TracksModule, ArtistModule, AlbumsModule],
+  controllers: [FavouritesController],
+  providers: [FavouritesService]
 })
 export class FavouritesModule {}

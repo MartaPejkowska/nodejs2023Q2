@@ -1,1 +1,3 @@
-export class addArtist {}
+export class addArtist{
+
+}

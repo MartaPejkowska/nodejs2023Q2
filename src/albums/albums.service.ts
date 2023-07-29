@@ -65,7 +65,7 @@ export class AlbumsService {
         if (!album) {
             throw new NotFoundException('Not found');
         }
-        const { name, year, artistId } = updateAlbumDto;
+        const {name, year, artistId} = updateAlbumDto
 
         const updatedAlbum = { ...album };
         if (updateAlbumDto.name) {
@@ -74,15 +74,14 @@ export class AlbumsService {
             }
         }
         if (updateAlbumDto.year) {
+
             if (typeof year !== 'number') {
                 throw new BadRequestException('Year should be a number');
             }
         }
         if (updateAlbumDto.artistId) {
-            if (typeof artistId !== 'string') {
-                throw new BadRequestException(
-                    'ArtistId should be a string or null',
-                );
+            if (typeof artistId !== 'string' ) {
+                throw new BadRequestException('ArtistId should be a string or null');
             }
         }
 
