@@ -36,7 +36,7 @@ export class FavouritesService {
             }
 
             this.favourites.tracks.push(track);
-            return `Succesfully added ${track} to favourites`
+            return `Succesfully added ${track.name} to favourites`
         } else if (params.func === 'album') {
             const albumId = params.id;
             isIdValid(albumId);
@@ -51,7 +51,7 @@ export class FavouritesService {
             }
 
             this.favourites.albums.push(album);
-            return `Succesfully added ${album} to favourites`
+            return `Succesfully added ${album.name} to favourites`
         }
         else if (params.func === 'artist') {
             const artistId = params.id;
@@ -67,7 +67,7 @@ export class FavouritesService {
             }
 
             this.favourites.artists.push(artist);
-            return `Succesfully added ${artist} to favourites`
+            return `Succesfully added ${artist.name} to favourites`
         }
     }
 
@@ -88,6 +88,7 @@ export class FavouritesService {
             }
             this.favourites.tracks.splice(trackIndex, 1);
             return `Removed track with id: ${trackId}`;
+
         } else if (params.func === 'album') {
             const albumId = params.id;
             isIdValid(albumId);

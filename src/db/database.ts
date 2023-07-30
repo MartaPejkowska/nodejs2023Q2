@@ -9,7 +9,7 @@ export const users: UserEntity[] = [
         id: '1197d507-8f1d-47e6-805a-7679b9cd19a0',
         login: 'Marta',
         password: 'password',
-        version: 2,
+        version: 1,
         createdAt: 1690372436970,
         updatedAt: 1690372458913,
     },
@@ -32,21 +32,21 @@ export const tracks: TrackEntity[] = [
         name: 'Lose yourself',
         artistId: '1197d507-8f1d-47e6-805a-7679b9cd19ab', // refers to Artist
         albumId: 'a4b6a8f4-8392-4331-bf99-10f7c39d5772', // refers to Album
-        duration: 5,
+        duration: 300,
     },
     {
         id: '2719c6b9-2a6d-4b7d-9848-00b08c698325', // uuid v4
         name: 'Till I collapse',
         artistId: '1197d507-8f1d-47e6-805a-7679b9cd19ab', // refers to Artist
         albumId: '4d3430c9-06d4-4939-af09-ac8e383c6558', // refers to Album
-        duration: 4,
+        duration: 260,
     },
     {
         id: 'db2819d3-74ce-4d1c-818b-ad6e104ccca0', // uuid v4
         name: 'The Corner',
         artistId: '60bd397a-0cc8-498f-80b0-81329066c7cc', // refers to Artist
         albumId: '87850bdd-467b-40d5-86a0-ae8ffa803715', // refers to Album
-        duration: 3,
+        duration: 200,
     },
 ];
 export const albums: AlbumEntity[] = [

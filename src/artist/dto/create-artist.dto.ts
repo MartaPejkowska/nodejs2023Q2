@@ -1,4 +1,9 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export class CreateArtistDto {
-  name: string;
-  grammy: boolean;
+    @ApiProperty({ example: 'Eminem' })
+    name: string;
+
+    @ApiProperty({ example: 'true' })
+    grammy: boolean;
 }

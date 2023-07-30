@@ -58,7 +58,7 @@ export class AlbumsService {
         const albumIndex = await this.albums.findIndex(
             (album) => album.id === id,
         );
-        console.log('albumindex', albumIndex);
+
         const album = this.albums[albumIndex];
         console.log('album', album);
 
@@ -99,7 +99,7 @@ export class AlbumsService {
         const albumIndex = await this.albums.findIndex(
             (album) => album.id === id,
         );
-        console.log(albumIndex);
+
         if (albumIndex === -1) {
             throw new NotFoundException('Not found');
         }
@@ -112,7 +112,6 @@ export class AlbumsService {
         });
         trackWithAlbum.map((track) => (track.albumId = null));
         this.albums.splice(albumIndex, 1);
-        console.log('still here');
 
         return `removed album with id: ${id}`;
     }

@@ -1,4 +1,9 @@
-export interface UpdatePasswordDto {
-  oldPassword: string; // previous password
-  newPassword: string; // new password
-  }
+import { ApiProperty } from '@nestjs/swagger';
+
+export class UpdatePasswordDto {
+    @ApiProperty({ example: 'password' })
+    oldPassword: string; // previous password
+
+    @ApiProperty({ example: 'password2' })
+    newPassword: string; // new password
+}

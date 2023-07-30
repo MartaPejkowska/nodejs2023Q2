@@ -15,13 +15,14 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
-import { User } from './interfaces/User.interface';
 import { UserEntity } from './entity/user.entity';
+import { ApiOkResponse } from '@nestjs/swagger';
 
 @Controller('user')
 export class UsersController {
     constructor(private usersService: UsersService) {}
     @Get()
+    @ApiOkResponse({ type: UserEntity })
     @Header('Content-Type', 'application/json')
     @HttpCode(HttpStatus.OK)
     @UseInterceptors(ClassSerializerInterceptor)
