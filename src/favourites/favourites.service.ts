@@ -4,7 +4,6 @@ import {
     UnprocessableEntityException,
     NotFoundException,
 } from '@nestjs/common';
-import { CreateFavouriteDto } from './dto/create-favourite.dto';
 import { FavouriteEntity } from './entities/favourite.entity';
 import { favourites } from 'src/db/database';
 import { TracksService } from 'src/tracks/tracks.service';
@@ -15,24 +14,21 @@ import { isIdValid } from 'src/utils/isIdValid';
 @Injectable()
 export class FavouritesService {
     @Inject(TracksService)
-    @Inject(ArtistService)
-    @Inject(AlbumsService)
     private trackService: TracksService;
-    private artistService: ArtistService;
+    @Inject(AlbumsService)
     private albumService: AlbumsService;
+    @Inject(ArtistService)
+    private artistService: ArtistService;
+
     favourites: FavouriteEntity = favourites;
     async create(params) {
-        console.log(favourites);
-        const favTracks = favourites.tracks;
-        console.log(favTracks);
-
         if (params.func === 'track') {
-            console.log('params', params);
             const trackId = params.id;
-            console.log(trackId);
             isIdValid(trackId);
-            const track = await this.trackService.findOne(trackId);
-            console.log('track', track);
+
+            const tracks = await this.trackService.findAll();
+            const track = tracks.find((track) => track.id === trackId);
+
             if (!track) {
                 throw new UnprocessableEntityException(
                     'There is no such track',
@@ -40,13 +36,14 @@ export class FavouritesService {
             }
 
             this.favourites.tracks.push(track);
+            return `Succesfully added ${track} to favourites`
         } else if (params.func === 'album') {
-            console.log('params', params);
             const albumId = params.id;
-            console.log(albumId);
             isIdValid(albumId);
-            const album = await this.albumService.findOne(albumId);
-            console.log('album', album);
+
+            const albums = await this.albumService.findAll();
+            const album = albums.find((album) => album.id === albumId);
+
             if (!album) {
                 throw new UnprocessableEntityException(
                     'There is no such album',
@@ -54,13 +51,15 @@ export class FavouritesService {
             }
 
             this.favourites.albums.push(album);
-        } else if (params.func === 'artist') {
-            console.log('params', params);
+            return `Succesfully added ${album} to favourites`
+        }
+        else if (params.func === 'artist') {
             const artistId = params.id;
-            console.log(artistId);
             isIdValid(artistId);
-            const artist = await this.artistService.findOne(artistId);
-            console.log('artist', artist);
+
+            const artists = await this.artistService.findAll();
+            const artist = artists.find((artist) => artist.id === artistId);
+
             if (!artist) {
                 throw new UnprocessableEntityException(
                     'There is no such artist',
@@ -68,6 +67,7 @@ export class FavouritesService {
             }
 
             this.favourites.artists.push(artist);
+            return `Succesfully added ${artist} to favourites`
         }
     }
 
@@ -88,6 +88,32 @@ export class FavouritesService {
             }
             this.favourites.tracks.splice(trackIndex, 1);
             return `Removed track with id: ${trackId}`;
+        } else if (params.func === 'album') {
+            const albumId = params.id;
+            isIdValid(albumId);
+
+            const albumIndex = this.favourites.albums.findIndex(
+                (album) => album.id === albumId,
+            );
+            if (albumIndex === -1) {
+                return new NotFoundException('This album in not in favourites');
+            }
+            this.favourites.albums.splice(albumIndex, 1);
+            return `Removed album with id: ${albumId}`;
+        } else if (params.func === 'artist') {
+            const artistId = params.id;
+            isIdValid(artistId);
+
+            const artistIndex = this.favourites.artists.findIndex(
+                (artist) => artist.id === artistId,
+            );
+            if (artistIndex === -1) {
+                return new NotFoundException(
+                    'This artist in not in favourites',
+                );
+            }
+            this.favourites.artists.splice(artistIndex, 1);
+            return `Removed artist with id: ${artistId}`;
         }
     }
 }
