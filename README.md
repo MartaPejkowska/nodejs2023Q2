@@ -13,7 +13,7 @@ npm install
 ```
 
 ## Running application
-
+In a root directory create .env file and put there e.g PORT=4000
 ```
 npm start
 ```
