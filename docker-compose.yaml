@@ -1,0 +1,22 @@
+version: '3.0'
+
+services:
+  app:
+    image: nodejs2023q2
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://username:password@localhost:5433/nestjs2023q2
+      PORT: 4000
+    ports:
+      - "3000:3000"
+
+
+  postgres:
+    image: postgres:10.4
+    ports: "35000:5433"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRESS_DB: nestjs2023q2

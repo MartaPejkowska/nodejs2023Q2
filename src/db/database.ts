@@ -5,14 +5,14 @@ import { TrackEntity } from 'src/tracks/entities/track.entity';
 import { UserEntity } from 'src/users/entity/user.entity';
 
 export const users: UserEntity[] = [
-    {
-        id: '1197d507-8f1d-47e6-805a-7679b9cd19a0',
-        login: 'Marta',
-        password: 'password',
-        version: 1,
-        createdAt: 1690372436970,
-        updatedAt: 1690372458913,
-    },
+    // {
+    //     id: '1197d507-8f1d-47e6-805a-7679b9cd19a0',
+    //     login: 'Marta',
+    //     password: 'password',
+    //     version: 1,
+    //     createdAt: BigInt(1690372436970),
+    //     updatedAt: BigInt(1690372458913),
+    // },
 ];
 export const artists: ArtistEntity[] = [
     {

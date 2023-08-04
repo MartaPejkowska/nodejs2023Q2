@@ -4,26 +4,30 @@ import {
     BadRequestException,
     NotFoundException,
     ForbiddenException,
-    HttpCode,
 } from '@nestjs/common';
 import { UserEntity } from './entity/user.entity';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { isIdValid } from 'src/utils/isIdValid';
-import { users } from 'src/db/database';
+// import { users } from 'src/db/database';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UsersService {
-    users: UserEntity[] = users;
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>;
+    // users: UserEntity[] = users;
 
-    findAll(): UserEntity[] {
-        return this.users;
+    async findAll(): Promise<UserEntity[]> {
+        const users = await this.userRepository.find();
+        return users;
     }
 
     async findOne(id: string): Promise<Partial<UserEntity> | string> {
         isIdValid(id);
-        const user = await this.users.find((user) => user.id === id);
+        const user = await this.userRepository.findOne({ where: { id: id } });
         if (!user) {
             throw new NotFoundException('Not found');
         }
@@ -40,10 +44,12 @@ export class UsersService {
             login: createUserDto.login,
             password: createUserDto.password,
             version: 1,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
+            // createdAt: Date.now(),
+            // updatedAt: Date.now(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
         };
-        this.users.push(user);
+        this.userRepository.save(user);
         const { password, ...userWP } = user;
 
         return userWP;
@@ -51,8 +57,8 @@ export class UsersService {
 
     async update(id: string, body: UpdatePasswordDto) {
         isIdValid(id);
-        const userIndex = await this.users.findIndex((user) => user.id === id);
-        const user = this.users[userIndex];
+        const user = await this.userRepository.findOne({ where: { id: id } });
+        // const user = this.userRepository[userIndex];
 
         if (!user) {
             throw new NotFoundException('Not found');
@@ -76,23 +82,22 @@ export class UsersService {
         const updatedUser = { ...user };
 
         updatedUser.password = body.newPassword;
-        updatedUser.updatedAt = Date.now();
+        updatedUser.updatedAt = new Date();
         updatedUser.version = updatedUser.version + 1;
 
-        this.users[userIndex] = updatedUser;
+        this.userRepository.save(updatedUser)
         const { password, ...userWP } = updatedUser;
         return userWP;
     }
 
     async delete(id: string) {
         isIdValid(id);
-        const userIndex = this.users.findIndex((user) => user.id === id);
-        console.log(userIndex);
+        const user = await this.userRepository.findOne({ where: { id: id } })
 
-        if (userIndex === -1) {
+        if (!user) {
             throw new NotFoundException('Not found');
         } else {
-            this.users.splice(userIndex, 1);
+            this.userRepository.remove(user)
         }
     }
 }
