@@ -10,10 +10,14 @@ import { albums } from 'src/db/database';
 import { v4 as uuidv4 } from 'uuid';
 import { isIdValid } from 'src/utils/isIdValid';
 import { tracks } from 'src/db/database';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class AlbumsService {
-    albums: AlbumEntity[] = albums;
+    // albums: AlbumEntity[] = albums;
+    @InjectRepository(AlbumEntity)
+    private readonly albumRepository: Repository<AlbumEntity>;
     create(createAlbumDto: CreateAlbumDto) {
         const name = createAlbumDto.name;
         const year = createAlbumDto.year;
@@ -34,17 +38,18 @@ export class AlbumsService {
             year: year,
             artistId: artistId,
         };
-        this.albums.push(album);
+        this.albumRepository.save(album);
         return album;
     }
 
-    findAll() {
-        return this.albums;
+    async findAll() {
+        const albums = await this.albumRepository.find();
+        return albums;
     }
 
     async findOne(id: string) {
         isIdValid(id);
-        const album = await this.albums.find((album) => album.id === id);
+        const album = await this.albumRepository.findOne({ where: { id: id } });
 
         if (!album) {
             throw new NotFoundException('Not found');
@@ -55,17 +60,12 @@ export class AlbumsService {
     async update(id: string, updateAlbumDto: UpdateAlbumDto) {
         console.log('in update');
         isIdValid(id);
-        const albumIndex = await this.albums.findIndex(
-            (album) => album.id === id,
-        );
-
-        const album = this.albums[albumIndex];
-        console.log('album', album);
+        const album = await this.albumRepository.findOne({ where: { id: id } });
 
         if (!album) {
             throw new NotFoundException('Not found');
         }
-        const {name, year, artistId} = updateAlbumDto
+        const { name, year, artistId } = updateAlbumDto;
 
         const updatedAlbum = { ...album };
         if (updateAlbumDto.name) {
@@ -74,14 +74,15 @@ export class AlbumsService {
             }
         }
         if (updateAlbumDto.year) {
-
             if (typeof year !== 'number') {
                 throw new BadRequestException('Year should be a number');
             }
         }
         if (updateAlbumDto.artistId) {
-            if (typeof artistId !== 'string' ) {
-                throw new BadRequestException('ArtistId should be a string or null');
+            if (typeof artistId !== 'string') {
+                throw new BadRequestException(
+                    'ArtistId should be a string or null',
+                );
             }
         }
 
@@ -90,28 +91,26 @@ export class AlbumsService {
         updatedAlbum.artistId =
             updateAlbumDto.artistId || updatedAlbum.artistId;
 
-        this.albums[albumIndex] = updatedAlbum;
-        return this.albums[albumIndex];
+        this.albumRepository.save(updatedAlbum);
+        return updatedAlbum;
     }
 
     async remove(id: string) {
         isIdValid(id);
-        const albumIndex = await this.albums.findIndex(
-            (album) => album.id === id,
-        );
+        const album = await this.albumRepository.findOne({ where: { id: id } });
 
-        if (albumIndex === -1) {
+        if (!album) {
             throw new NotFoundException('Not found');
         }
 
-        const trackWithAlbum = [];
-        tracks.map((track) => {
-            if (track.albumId === id) {
-                trackWithAlbum.push(track);
-            }
-        });
-        trackWithAlbum.map((track) => (track.albumId = null));
-        this.albums.splice(albumIndex, 1);
+        // const trackWithAlbum = [];
+        // tracks.map((track) => {
+        //     if (track.albumId === id) {
+        //         trackWithAlbum.push(track);
+        //     }
+        // });
+        // trackWithAlbum.map((track) => (track.albumId = null));
+        this.albumRepository.delete(album);
 
         return `removed album with id: ${id}`;
     }

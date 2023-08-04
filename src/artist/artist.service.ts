@@ -10,10 +10,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { isIdValid } from 'src/utils/isIdValid';
 import { albums, artists } from 'src/db/database';
 import { tracks } from 'src/db/database';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ArtistService {
-    artists: ArtistEntity[] = artists;
+    // artists: ArtistEntity[] = artists;
+    @InjectRepository(ArtistEntity)
+    private readonly artistRepository: Repository<ArtistEntity>;
     create(createArtistDto: CreateArtistDto) {
         const { name, grammy } = createArtistDto;
 
@@ -31,17 +35,20 @@ export class ArtistService {
             name: name,
             grammy: grammy,
         };
-        this.artists.push(artist);
+        this.artistRepository.save(artist);
         return artist;
     }
 
-    findAll(): ArtistEntity[] {
-        return this.artists;
+    async findAll(): Promise<ArtistEntity[]> {
+        const artists = await this.artistRepository.find();
+        return artists;
     }
 
     async findOne(id: string) {
         isIdValid(id);
-        const artist = await this.artists.find((artist) => artist.id === id);
+        const artist = await this.artistRepository.findOne({
+            where: { id: id },
+        });
         if (!artist) {
             throw new NotFoundException('Not found');
         }
@@ -50,10 +57,9 @@ export class ArtistService {
 
     async update(id: string, updateArtistDto: UpdateArtistDto) {
         isIdValid(id);
-        const artistIndex = await this.artists.findIndex(
-            (artist) => artist.id === id,
-        );
-        const artist = this.artists[artistIndex];
+        const artist = await this.artistRepository.findOne({
+            where: { id: id },
+        });
 
         if (!artist) {
             throw new NotFoundException('Not found');
@@ -70,36 +76,36 @@ export class ArtistService {
         updatedArtist.name = updateArtistDto.name;
         updatedArtist.grammy = updateArtistDto.grammy;
 
-        this.artists[artistIndex] = updatedArtist;
-        return this.artists[artistIndex];
+        this.artistRepository.save(updatedArtist);
+        return updatedArtist;
     }
 
     async remove(id: string) {
         isIdValid(id);
-        const artistIndex = await this.artists.findIndex(
-            (artist) => artist.id === id,
-        );
-        if (artistIndex === -1) {
+        const artist = await this.artistRepository.findOne({
+            where: { id: id },
+        });
+        if (!artist) {
             throw new NotFoundException('Not found');
         }
-        this.artists.splice(artistIndex, 1);
-        console.log('track przed', tracks);
-        const trackWithArtist = [];
-        const albumWithArtist = [];
-        tracks.map((track) => {
-            if (track.artistId === id) {
-                trackWithArtist.push(track);
-            }
-        });
-        albums.map((album) => {
-            if (album.artistId === id) {
-                albumWithArtist.push(album);
-            }
-        });
-        trackWithArtist.map((track) => (track.artistId = null));
-        albumWithArtist.map((album) => (album.artistId = null));
+        this.artistRepository.remove(artist);
+        // console.log('track przed', tracks);
+        // const trackWithArtist = [];
+        // const albumWithArtist = [];
+        // tracks.map((track) => {
+        //     if (track.artistId === id) {
+        //         trackWithArtist.push(track);
+        //     }
+        // });
+        // albums.map((album) => {
+        //     if (album.artistId === id) {
+        //         albumWithArtist.push(album);
+        //     }
+        // });
+        // trackWithArtist.map((track) => (track.artistId = null));
+        // albumWithArtist.map((album) => (album.artistId = null));
 
-        console.log('tracks po artist', tracks);
+        // console.log('tracks po artist', tracks);
         return `removed artist with id: ${id}`;
     }
 }

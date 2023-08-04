@@ -9,10 +9,14 @@ import { TrackEntity } from './entities/track.entity';
 import { tracks } from 'src/db/database';
 import { isIdValid } from 'src/utils/isIdValid';
 import { v4 as uuidv4 } from 'uuid';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class TracksService {
-    tracks: TrackEntity[] = tracks;
+    // tracks: TrackEntity[] = tracks;
+    @InjectRepository(TrackEntity)
+    private readonly trackRepository: Repository<TrackEntity>;
     create(createTrackDto: CreateTrackDto) {
         const { name, artistId, albumId, duration } = createTrackDto;
         const track = {
@@ -28,22 +32,24 @@ export class TracksService {
             // typeof createTrackDto.albumId !== 'string' ||
             // typeof createTrackDto.artistId !== 'string' ||
             typeof createTrackDto.duration !== 'number' ||
-            !createTrackDto.name || !createTrackDto.duration
+            !createTrackDto.name ||
+            !createTrackDto.duration
         ) {
             throw new BadRequestException('Duration should be number');
         }
 
-        this.tracks.push(track);
+        this.trackRepository.save(track);
         return track;
     }
 
-    findAll(): TrackEntity[] {
-        return this.tracks;
+    async findAll(): Promise<TrackEntity[]> {
+        const tracks = await this.trackRepository.find();
+        return tracks;
     }
 
     async findOne(id: string) {
         isIdValid(id);
-        const track = await this.tracks.find((track) => track.id === id);
+        const track = await this.trackRepository.findOne({ where: { id: id } });
         if (!track) {
             throw new NotFoundException('Not found');
         }
@@ -52,10 +58,7 @@ export class TracksService {
 
     async update(id: string, updateTrackDto: UpdateTrackDto) {
         isIdValid(id);
-        const trackIndex = await this.tracks.findIndex(
-            (track) => track.id === id,
-        );
-        const track = this.tracks[trackIndex];
+        const track = await this.trackRepository.findOne({ where: { id: id } });
 
         if (!track) {
             throw new NotFoundException('Not found');
@@ -90,19 +93,19 @@ export class TracksService {
         updatedTrack.duration =
             updateTrackDto.duration || updatedTrack.duration;
 
-        this.tracks[trackIndex] = updatedTrack;
-        return this.tracks[trackIndex];
+        this.trackRepository.save(updatedTrack);
+        return updatedTrack;
     }
 
     async remove(id: string) {
         isIdValid(id);
-        const trackIndex = await this.tracks.findIndex(
-            (track) => track.id === id,
-        );
-        if (trackIndex === -1) {
+        const track = await this.trackRepository.findOne({
+            where: { id: id },
+        });
+        if (!track) {
             throw new NotFoundException('Not found');
         }
-        this.tracks.splice(trackIndex, 1);
+        this.trackRepository.delete(track);
         return `Removed track with id: ${id}`;
     }
 }
