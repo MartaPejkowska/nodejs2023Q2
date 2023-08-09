@@ -58,20 +58,37 @@ export class ArtistService {
             where: { id: id },
         });
 
+
         if (!artist) {
             throw new NotFoundException('Not found');
         }
 
-        if (
-            typeof updateArtistDto.name !== 'string' ||
-            typeof updateArtistDto.grammy !== 'boolean'
-        ) {
-            throw new BadRequestException('Invalid data');
-        }
+        // if (
+        //     typeof updateArtistDto.name !== 'string' ||
+        //     typeof updateArtistDto.grammy !== 'boolean'
+        // ) {
+        //     throw new BadRequestException('Invalid data');
+        // }
         const updatedArtist = { ...artist };
+        if (updateArtistDto.name) {
+            if (typeof updateArtistDto.name !== 'string') {
+                throw new BadRequestException('Invalid data');
+            }
+        }
+        if (updateArtistDto.grammy) {
+            if (typeof updateArtistDto.grammy !== 'boolean') {
+                throw new BadRequestException('Invalid data');
+            }
+        }
 
-        updatedArtist.name = updateArtistDto.name;
-        updatedArtist.grammy = updateArtistDto.grammy;
+
+        updateArtistDto.name
+            ? (updatedArtist.name = updateArtistDto.name)
+            : (updatedArtist.name = updatedArtist.name);
+        updatedArtist.grammy
+            ? (updatedArtist.grammy = updateArtistDto.grammy)
+            : (updatedArtist.grammy = updatedArtist.grammy);
+
 
         this.artistRepository.save(updatedArtist);
         return updatedArtist;

@@ -22,7 +22,7 @@ export class UserEntity {
     @Column({
         type: 'varchar',
         nullable: false,
-        select: false
+
     })
     @Exclude()
     password: string;

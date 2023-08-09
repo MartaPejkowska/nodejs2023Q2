@@ -30,9 +30,11 @@ export class TracksService {
             albumId,
             duration,
         };
+
         const artist = await this.artistRepository.findOne({
             where: { id: createTrackDto.artistId },
         });
+
         const album = await this.albumRepository.findOne({
             where: { id: createTrackDto.albumId },
         });
@@ -49,14 +51,12 @@ export class TracksService {
             !createTrackDto.name ||
             !createTrackDto.duration
         ) {
-            throw new BadRequestException('Duration should be number');
+            throw new BadRequestException('Duration should be number, name should be a string');
         }
 
         this.trackRepository.save(
             this.trackRepository.create({
                 ...track,
-                album,
-                artist,
             }),
         );
         return track;

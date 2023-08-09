@@ -1,7 +1,13 @@
 import { AlbumEntity } from 'src/albums/entities/album.entity';
 import { ArtistEntity } from 'src/artist/entities/artist.entity';
 import { FavouriteEntity } from 'src/favourites/entities/favourite.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    ManyToOne,
+    OneToMany,
+} from 'typeorm';
 
 @Entity()
 export class TrackEntity {
@@ -11,22 +17,22 @@ export class TrackEntity {
     @Column()
     name: string;
 
-    @Column()
+    @Column({ nullable: true })
     artistId: string | null; // refers to Artist
 
-    @Column()
+    @Column({ nullable: true })
     albumId: string | null; // refers to Album
 
     @Column()
     duration: number; // integer number
 
     @ManyToOne(() => AlbumEntity, (album) => album.tracks, {
-        onDelete: 'CASCADE',
+        onDelete: 'SET NULL',
     })
     album: AlbumEntity;
 
     @ManyToOne(() => ArtistEntity, (artist) => artist.tracks, {
-        onDelete: 'CASCADE',
+        onDelete: 'SET NULL',
     })
     artist: ArtistEntity;
 
