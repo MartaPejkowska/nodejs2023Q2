@@ -69,8 +69,8 @@ export const albums: AlbumEntity[] = [
     //     artistId: '60bd397a-0cc8-498f-80b0-81329066c7cc',
     // },
 ];
-export const favourites: FavouriteEntity = {
-    artists: [],
-    albums: [],
-    tracks: [],
-};
+// export const favourites: FavouriteEntity = {
+//     artists: [],
+//     albums: [],
+//     tracks: [],
+// };

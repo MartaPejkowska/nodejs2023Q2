@@ -5,116 +5,154 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { FavouriteEntity } from './entities/favourite.entity';
-import { favourites } from 'src/db/database';
-import { TracksService } from 'src/tracks/tracks.service';
-import { ArtistService } from 'src/artist/artist.service';
-import { AlbumsService } from 'src/albums/albums.service';
 import { isIdValid } from 'src/utils/isIdValid';
+import { DataSource, DeepPartial, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TrackEntity } from 'src/tracks/entities/track.entity';
+import { AlbumEntity } from 'src/albums/entities/album.entity';
+import { ArtistEntity } from 'src/artist/entities/artist.entity';
 
 @Injectable()
 export class FavouritesService {
-    @Inject(TracksService)
-    private trackService: TracksService;
-    @Inject(AlbumsService)
-    private albumService: AlbumsService;
-    @Inject(ArtistService)
-    private artistService: ArtistService;
+    @InjectRepository(FavouriteEntity)
+    private readonly favouriteRepository: Repository<FavouriteEntity>;
+    @InjectRepository(TrackEntity)
+    private readonly trackRepository: Repository<TrackEntity>;
+    @InjectRepository(ArtistEntity)
+    private artistRepository: Repository<ArtistEntity>;
+    @InjectRepository(AlbumEntity)
+    private albumRepository: Repository<AlbumEntity>;
 
-    favourites: FavouriteEntity = favourites;
     async create(params) {
-        if (params.func === 'track') {
-            const trackId = params.id;
-            isIdValid(trackId);
+        try {
+            if (params.func === 'track') {
+                const trackId = params.id;
+                isIdValid(trackId);
 
-            const tracks = await this.trackService.findAll();
-            const track = tracks.find((track) => track.id === trackId);
+                const track = await this.trackRepository.findOne({
+                    where: { id: trackId },
+                });
 
-            if (!track) {
-                throw new UnprocessableEntityException(
-                    'There is no such track',
-                );
+                if (!track) {
+                    throw new UnprocessableEntityException(
+                        'There is no such track',
+                    );
+                }
+
+                // this.favouriteRepository.save({ tracks: track });
+                this.favouriteRepository.save({ tracks: trackId });
+                return `Succesfully added ${track.name} to favourites`;
+            } else if (params.func === 'album') {
+                const albumId = params.id;
+                isIdValid(albumId);
+
+                const album = await this.albumRepository.findOne({
+                    where: { id: albumId },
+                });
+
+                if (!album) {
+                    throw new UnprocessableEntityException(
+                        'There is no such album',
+                    );
+                }
+
+                // this.favouriteRepository.save({ albums: album });
+                this.favouriteRepository.save({ albums: albumId });
+                return `Succesfully added ${album.name} to favourites`;
+            } else if (params.func === 'artist') {
+                const artistId = params.id;
+                isIdValid(artistId);
+
+                const artist = await this.artistRepository.findOne({
+                    where: { id: artistId },
+                });
+
+                // const artistToPush: DeepPartial<FavouriteEntity>={
+                //     artists: artist
+                // }
+
+                if (!artist) {
+                    throw new UnprocessableEntityException(
+                        'There is no such artist',
+                    );
+                }
+
+                // const favourites = await this.favouriteRepository.find();
+                // console.log('favs', favourites);
+
+                const artistToPush: DeepPartial<FavouriteEntity>[] =
+                    await this.favouriteRepository.find({
+                        select: {
+                            artists: true,
+                        },
+                    });
+                console.log(artistToPush);
+                artistToPush.push(artistId);
+                console.log(artistToPush);
+
+                //  const artist2 = new FavouriteEntity();
+                // artist2.artists = artistToPush;
+                // this.favouriteRepository.save(artist2)
+                // const artistToPush = favourites[0].artists;
+                // console.log(favourites[0].artists);
+                // favourites[0].artists = artist;
+                // console.log(favourites[0].artists);
+                // console.log('atp', artistToPush);
+
+                // await this.favouriteRepository.save( artistToPush );
+
+                return `Succesfully added ${artist.name} to favourites`;
             }
-
-            this.favourites.tracks.push(track);
-            return `Succesfully added ${track.name} to favourites`
-        } else if (params.func === 'album') {
-            const albumId = params.id;
-            isIdValid(albumId);
-
-            const albums = await this.albumService.findAll();
-            const album = albums.find((album) => album.id === albumId);
-
-            if (!album) {
-                throw new UnprocessableEntityException(
-                    'There is no such album',
-                );
-            }
-
-            this.favourites.albums.push(album);
-            return `Succesfully added ${album.name} to favourites`
-        }
-        else if (params.func === 'artist') {
-            const artistId = params.id;
-            isIdValid(artistId);
-
-            const artists = await this.artistService.findAll();
-            const artist = artists.find((artist) => artist.id === artistId);
-
-            if (!artist) {
-                throw new UnprocessableEntityException(
-                    'There is no such artist',
-                );
-            }
-
-            this.favourites.artists.push(artist);
-            return `Succesfully added ${artist.name} to favourites`
+        } catch (err) {
+            console.log(err);
         }
     }
 
-    findAll() {
-        return this.favourites;
+    async findAll() {
+        try {
+            const favourites = await this.favouriteRepository.find();
+
+            return favourites;
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     async remove(params) {
-        if (params.func === 'track') {
-            const trackId = params.id;
-            isIdValid(trackId);
-
-            const trackIndex = this.favourites.tracks.findIndex(
-                (track) => track.id === trackId,
-            );
-            if (trackIndex === -1) {
-                return new NotFoundException('This track in not in favourites');
-            }
-            this.favourites.tracks.splice(trackIndex, 1);
-            return `Removed track with id: ${trackId}`;
-
-        } else if (params.func === 'album') {
-            const albumId = params.id;
-            isIdValid(albumId);
-
-            const albumIndex = this.favourites.albums.findIndex(
-                (album) => album.id === albumId,
-            );
-            if (albumIndex === -1) {
-                return new NotFoundException('This album in not in favourites');
-            }
-            this.favourites.albums.splice(albumIndex, 1);
-            return `Removed album with id: ${albumId}`;
-        } else if (params.func === 'artist') {
-            const artistId = params.id;
-            isIdValid(artistId);
-
-            const artistIndex = this.favourites.artists.findIndex(
-                (artist) => artist.id === artistId,
-            );
-            if (artistIndex === -1) {
-                return new NotFoundException(
-                    'This artist in not in favourites',
-                );
-            }
-            this.favourites.artists.splice(artistIndex, 1);
-            return `Removed artist with id: ${artistId}`;
-        }
+        //     if (params.func === 'track') {
+        //         const trackId = params.id;
+        //         isIdValid(trackId);
+        //         const track = await this.trackRepository.findOne({
+        //             where: { id: trackId },
+        //         });
+        //         if (!track) {
+        //             throw new NotFoundException('Not found');
+        //         }
+        //         this.favouriteRepository[0].tracks.delete(track);
+        //         return `Removed track with id: ${trackId}`;
+        //     } else if (params.func === 'album') {
+        //         const albumId = params.id;
+        //         isIdValid(albumId);
+        //         const album = await this.trackRepository.findOne({
+        //             where: { id: albumId },
+        //         });
+        //         if (!album) {
+        //             throw new NotFoundException('Not found');
+        //         }
+        //         this.favouriteRepository[0].albums.delete(album);
+        //         return `Removed album with id: ${albumId}`;
+        //     } else if (params.func === 'artist') {
+        //         const artistId = params.id;
+        //         isIdValid(artistId);
+        //         const artist = await this.artistRepository.findOne({
+        //             where: { id: artistId },
+        //         });
+        //         if (!artist) {
+        //             throw new NotFoundException('Not found');
+        //         }
+        //         this.favouriteRepository[0].artists.delete(artist);
+        //         return `Removed artist with id: ${artistId}`;
+        //     }
+        // }
     }
 }

@@ -8,14 +8,11 @@ import { UpdateArtistDto } from './dto/update-artist.dto';
 import { ArtistEntity } from './entities/artist.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { isIdValid } from 'src/utils/isIdValid';
-import { albums, artists } from 'src/db/database';
-import { tracks } from 'src/db/database';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ArtistService {
-    // artists: ArtistEntity[] = artists;
     @InjectRepository(ArtistEntity)
     private readonly artistRepository: Repository<ArtistEntity>;
     create(createArtistDto: CreateArtistDto) {
@@ -89,23 +86,6 @@ export class ArtistService {
             throw new NotFoundException('Not found');
         }
         this.artistRepository.remove(artist);
-        // console.log('track przed', tracks);
-        // const trackWithArtist = [];
-        // const albumWithArtist = [];
-        // tracks.map((track) => {
-        //     if (track.artistId === id) {
-        //         trackWithArtist.push(track);
-        //     }
-        // });
-        // albums.map((album) => {
-        //     if (album.artistId === id) {
-        //         albumWithArtist.push(album);
-        //     }
-        // });
-        // trackWithArtist.map((track) => (track.artistId = null));
-        // albumWithArtist.map((album) => (album.artistId = null));
-
-        // console.log('tracks po artist', tracks);
         return `removed artist with id: ${id}`;
     }
 }

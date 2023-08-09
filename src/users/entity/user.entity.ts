@@ -15,30 +15,26 @@ export class UserEntity {
     @Column({
         type: 'varchar',
         nullable: false,
-        unique: true,
+        // unique: true,
     })
     login: string;
 
     @Column({
         type: 'varchar',
         nullable: false,
+        select: false
     })
-    @Exclude({ toPlainOnly: true })
+    @Exclude()
     password: string;
 
     @Column({ nullable: false, default: 1 })
     version: number;
 
-    // @CreateDateColumn({type: 'timestamp'})
-    // createdAt: Date;
+    @Column('bigint',{ nullable: true})
+    createdAt: number;
 
-    // @UpdateDateColumn({type: 'timestamp'})
-    // updatedAt: Date;
-    @CreateDateColumn()
-    createdAt: Date;
-
-    @UpdateDateColumn()
-    updatedAt: Date;
+    @Column('bigint',{ nullable: true})
+    updatedAt: number;
 
     constructor(partial: Partial<UserEntity>) {
         Object.assign(this, partial);

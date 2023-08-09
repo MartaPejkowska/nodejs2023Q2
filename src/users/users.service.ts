@@ -27,7 +27,9 @@ export class UsersService {
 
     async findOne(id: string): Promise<Partial<UserEntity> | string> {
         isIdValid(id);
-        const user = await this.userRepository.findOne({ where: { id: id } });
+        const user = await this.userRepository.findOne({
+            where: { id: id },
+        });
         if (!user) {
             throw new NotFoundException('Not found');
         }
@@ -44,10 +46,8 @@ export class UsersService {
             login: createUserDto.login,
             password: createUserDto.password,
             version: 1,
-            // createdAt: Date.now(),
-            // updatedAt: Date.now(),
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            createdAt: new Date().getTime(),
+            updatedAt: new Date().getTime(),
         };
         this.userRepository.save(user);
         const { password, ...userWP } = user;
@@ -57,8 +57,9 @@ export class UsersService {
 
     async update(id: string, body: UpdatePasswordDto) {
         isIdValid(id);
-        const user = await this.userRepository.findOne({ where: { id: id } });
-        // const user = this.userRepository[userIndex];
+        const user = await this.userRepository.findOne({
+            where: { id: id },
+        });
 
         if (!user) {
             throw new NotFoundException('Not found');
@@ -82,22 +83,24 @@ export class UsersService {
         const updatedUser = { ...user };
 
         updatedUser.password = body.newPassword;
-        updatedUser.updatedAt = new Date();
+        user.updatedAt = new Date().getTime();
         updatedUser.version = updatedUser.version + 1;
 
-        this.userRepository.save(updatedUser)
+        this.userRepository.save(updatedUser);
         const { password, ...userWP } = updatedUser;
         return userWP;
     }
 
     async delete(id: string) {
         isIdValid(id);
-        const user = await this.userRepository.findOne({ where: { id: id } })
+        const user = await this.userRepository.findOne({
+            where: { id: id },
+        });
 
         if (!user) {
             throw new NotFoundException('Not found');
         } else {
-            this.userRepository.remove(user)
+            this.userRepository.remove(user);
         }
     }
 }

@@ -1,6 +1,7 @@
 import { AlbumEntity } from 'src/albums/entities/album.entity';
 import { ArtistEntity } from 'src/artist/entities/artist.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { FavouriteEntity } from 'src/favourites/entities/favourite.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity()
 export class TrackEntity {
@@ -28,4 +29,10 @@ export class TrackEntity {
         onDelete: 'CASCADE',
     })
     artist: ArtistEntity;
+
+    @OneToMany(() => FavouriteEntity, (favourite) => favourite.tracks, {
+        cascade: true,
+        nullable: true,
+    })
+    favourites: FavouriteEntity[];
 }

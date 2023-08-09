@@ -6,22 +6,34 @@ import {
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { AlbumEntity } from './entities/album.entity';
-import { albums } from 'src/db/database';
 import { v4 as uuidv4 } from 'uuid';
 import { isIdValid } from 'src/utils/isIdValid';
-import { tracks } from 'src/db/database';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ArtistEntity } from 'src/artist/entities/artist.entity';
 
 @Injectable()
 export class AlbumsService {
-    // albums: AlbumEntity[] = albums;
     @InjectRepository(AlbumEntity)
     private readonly albumRepository: Repository<AlbumEntity>;
-    create(createAlbumDto: CreateAlbumDto) {
+    @InjectRepository(ArtistEntity)
+    private artistRepository: Repository<ArtistEntity>;
+    async create(createAlbumDto: CreateAlbumDto) {
         const name = createAlbumDto.name;
         const year = createAlbumDto.year;
         const artistId = createAlbumDto.artistId;
+
+        isIdValid(artistId);
+
+        const artist = await this.artistRepository.findOne({
+            where: {
+                id: createAlbumDto.artistId,
+            },
+        });
+
+        if (!artist) {
+            throw new BadRequestException('There is no such artist');
+        }
 
         if (
             // typeof name !== 'string' ||
@@ -38,7 +50,11 @@ export class AlbumsService {
             year: year,
             artistId: artistId,
         };
-        this.albumRepository.save(album);
+        this.albumRepository.save(
+            this.albumRepository.create({
+                ...album,
+            }),
+        );
         return album;
     }
 
@@ -49,7 +65,9 @@ export class AlbumsService {
 
     async findOne(id: string) {
         isIdValid(id);
-        const album = await this.albumRepository.findOne({ where: { id: id } });
+        const album = await this.albumRepository.findOne({
+            where: { id: id },
+        });
 
         if (!album) {
             throw new NotFoundException('Not found');
@@ -58,9 +76,10 @@ export class AlbumsService {
     }
 
     async update(id: string, updateAlbumDto: UpdateAlbumDto) {
-        console.log('in update');
         isIdValid(id);
-        const album = await this.albumRepository.findOne({ where: { id: id } });
+        const album = await this.albumRepository.findOne({
+            where: { id: id },
+        });
 
         if (!album) {
             throw new NotFoundException('Not found');
@@ -98,20 +117,10 @@ export class AlbumsService {
     async remove(id: string) {
         isIdValid(id);
         const album = await this.albumRepository.findOne({ where: { id: id } });
-
         if (!album) {
             throw new NotFoundException('Not found');
         }
-
-        // const trackWithAlbum = [];
-        // tracks.map((track) => {
-        //     if (track.albumId === id) {
-        //         trackWithAlbum.push(track);
-        //     }
-        // });
-        // trackWithAlbum.map((track) => (track.albumId = null));
-        this.albumRepository.delete(album);
-
+        this.albumRepository.remove(album);
         return `removed album with id: ${id}`;
     }
 }
