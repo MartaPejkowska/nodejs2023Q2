@@ -102,7 +102,7 @@ export class ArtistService {
         if (!artist) {
             throw new NotFoundException('Not found');
         }
-        this.artistRepository.remove(artist);
+        this.artistRepository.delete(artist);
         return `removed artist with id: ${id}`;
     }
 }

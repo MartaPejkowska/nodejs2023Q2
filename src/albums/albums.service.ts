@@ -122,7 +122,7 @@ export class AlbumsService {
         if (!album) {
             throw new NotFoundException('Not found');
         }
-        this.albumRepository.remove(album);
+        this.albumRepository.delete(album);
         return `removed album with id: ${id}`;
     }
 }
