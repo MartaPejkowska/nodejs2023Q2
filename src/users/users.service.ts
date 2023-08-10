@@ -64,7 +64,7 @@ export class UsersService {
         if (!user) {
             throw new NotFoundException('Not found');
         }
-        console.log(user)
+
         if (
             !body.oldPassword ||
             !body.newPassword ||

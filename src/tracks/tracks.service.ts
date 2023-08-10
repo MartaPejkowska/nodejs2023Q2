@@ -8,13 +8,18 @@ import { UpdateTrackDto } from './dto/update-track.dto';
 import { TrackEntity } from './entities/track.entity';
 import { isIdValid } from 'src/utils/isIdValid';
 import { v4 as uuidv4 } from 'uuid';
-import { Repository } from 'typeorm';
+import { Repository, EntityManager } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ArtistEntity } from 'src/artist/entities/artist.entity';
 import { AlbumEntity } from 'src/albums/entities/album.entity';
 
 @Injectable()
 export class TracksService {
+    // constructor(
+    //     @InjectRepository(TrackEntity)
+    //     private readonly trackRepository: Repository<TrackEntity>,
+    //     private readonly entityManager: EntityManager,
+    // ) {}
     @InjectRepository(TrackEntity)
     private readonly trackRepository: Repository<TrackEntity>;
     @InjectRepository(ArtistEntity)
@@ -51,7 +56,9 @@ export class TracksService {
             !createTrackDto.name ||
             !createTrackDto.duration
         ) {
-            throw new BadRequestException('Duration should be number, name should be a string');
+            throw new BadRequestException(
+                'Duration should be number, name should be a string',
+            );
         }
 
         this.trackRepository.save(
@@ -59,6 +66,7 @@ export class TracksService {
                 ...track,
             }),
         );
+        // this.entityManager.save(track); /// poczytać
         return track;
     }
 

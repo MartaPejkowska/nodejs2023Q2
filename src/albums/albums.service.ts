@@ -23,7 +23,9 @@ export class AlbumsService {
         const year = createAlbumDto.year;
         const artistId = createAlbumDto.artistId;
 
-        isIdValid(artistId);
+        if (artistId !== null) {
+            isIdValid(artistId);
+        }
 
         const artist = await this.artistRepository.findOne({
             where: {
