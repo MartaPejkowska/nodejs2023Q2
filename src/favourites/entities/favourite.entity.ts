@@ -1,50 +1,47 @@
-import { Exclude } from 'class-transformer';
 import { AlbumEntity } from 'src/albums/entities/album.entity';
 import { ArtistEntity } from 'src/artist/entities/artist.entity';
 import { TrackEntity } from 'src/tracks/entities/track.entity';
-import {
-    Entity,
-    Column,
-    ManyToOne,
-    PrimaryColumn,
-    JoinColumn,
-    PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
 export class FavouriteEntity {
-    // @PrimaryColumn({ type:'jsonb', array: false,  default: [] })
-    // artists?: ArtistEntity[];
+    albums: AlbumEntity[];
+    tracks: TrackEntity[];
+    artists: ArtistEntity[];
+}
 
-    // @Column('int', { array: true, nullable: true, default: [] })
-    // albums?: AlbumEntity;
+@Entity('track-fav')
+export class TrackFav {
+    @PrimaryGeneratedColumn()
+    id: string;
 
-    // @Column('int', { array: true, nullable: true, default: [] })
-    // tracks?: TrackEntity;
-    @PrimaryColumn('text', { array: true, default: [] })
-    artists?: string[];
+    @Column({ nullable: true })
+    trackId: string | null;
 
-    @Column('text', { array: true, default: [] })
-    albums?: string[];
-
-    @Column('text', { array: true, default: [] })
-    tracks?: string[];
-
-    @ManyToOne(() => AlbumEntity, (album) => album.favourites, {
-        onDelete: 'CASCADE',
-        nullable: true,
-    })
-    album: AlbumEntity;
-
-    @ManyToOne(() => TrackEntity, (track) => track.favourites, {
-        onDelete: 'CASCADE',
-        nullable: true,
-    })
+    @ManyToOne(() => TrackEntity, { onDelete: 'SET NULL', eager: true })
     track: TrackEntity;
+}
 
-    @ManyToOne(() => ArtistEntity, (artist) => artist.favourites, {
-        onDelete: 'CASCADE',
-        nullable: true,
-    })
+@Entity('artist-fav')
+export class ArtistFav {
+    @PrimaryGeneratedColumn()
+    id: string;
+
+    @Column({ nullable: true })
+    artistId: string | null;
+
+    @ManyToOne(() => ArtistEntity, { onDelete: 'SET NULL', eager: true })
     artist: ArtistEntity;
 }
+
+@Entity('album-fav')
+export class AlbumFav {
+    @PrimaryGeneratedColumn()
+    id: string;
+
+    @Column({ nullable: true })
+    albumId: string | null;
+
+    @ManyToOne(() => AlbumEntity, { onDelete: 'SET NULL', eager: true })
+    album: AlbumEntity;
+}
+

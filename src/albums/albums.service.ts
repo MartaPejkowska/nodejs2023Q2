@@ -57,6 +57,7 @@ export class AlbumsService {
                 ...album,
             }),
         );
+        console.log('create album',album)
         return album;
     }
 
@@ -70,6 +71,7 @@ export class AlbumsService {
         const album = await this.albumRepository.findOne({
             where: { id: id },
         });
+        console.log('album one', album)
 
         if (!album) {
             throw new NotFoundException('Not found');

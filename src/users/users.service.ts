@@ -30,6 +30,7 @@ export class UsersService {
         const user = await this.userRepository.findOne({
             where: { id: id },
         });
+        console.log(user)
         if (!user) {
             throw new NotFoundException('Not found');
         }
@@ -51,6 +52,7 @@ export class UsersService {
         };
         this.userRepository.save(user);
         const { password, ...userWP } = user;
+        console.log(user)
 
         return userWP;
     }

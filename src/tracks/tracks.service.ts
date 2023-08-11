@@ -67,6 +67,7 @@ export class TracksService {
             }),
         );
         // this.entityManager.save(track); /// poczytać
+        console.log('create track',track)
         return track;
     }
 
@@ -80,6 +81,7 @@ export class TracksService {
         const track = await this.trackRepository.findOne({
             where: { id: id },
         });
+        console.log('track one', track)
         if (!track) {
             throw new NotFoundException('Not found');
         }

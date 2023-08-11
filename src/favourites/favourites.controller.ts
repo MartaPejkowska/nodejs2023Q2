@@ -1,16 +1,5 @@
-import {
-    Controller,
-    Get,
-    Post,
-    Param,
-    Delete,
-    Inject,
-    HttpCode
-} from '@nestjs/common';
+import { Controller, Get, Post, Param, Delete, HttpCode } from '@nestjs/common';
 import { FavouritesService } from './favourites.service';
-import { CreateFavouriteDto } from './dto/create-favourite.dto';
-import { AlbumsService } from 'src/albums/albums.service';
-import { ArtistService } from 'src/artist/artist.service';
 
 interface paramsDTO {
     func: string;
@@ -19,12 +8,7 @@ interface paramsDTO {
 
 @Controller('favs')
 export class FavouritesController {
-    constructor(
-        private readonly favouritesService: FavouritesService,
-        // private readonly albumService: AlbumsService,
-        // private readonly artistService: ArtistService,
-    ) {}
-
+    constructor(private readonly favouritesService: FavouritesService) {}
 
     @Get()
     findAll() {
@@ -36,26 +20,9 @@ export class FavouritesController {
         return this.favouritesService.create(params);
     }
 
-
     @Delete(':func/:id')
     @HttpCode(204)
     remove(@Param() params: paramsDTO) {
         return this.favouritesService.remove(params);
     }
-    // @Post('album/:id')
-    // create(@Body() createFavouriteDto: CreateFavouriteDto) {
-    //   return this.favouritesService.create(createFavouriteDto);
-    // }
-    // @Delete('album/:id')
-    // remove(@Param('id') id: string) {
-    //   return this.favouritesService.remove(id);
-    // }
-    // @Post('artist/:id')
-    // create(@Body() createFavouriteDto: CreateFavouriteDto) {
-    //   return this.favouritesService.create(createFavouriteDto);
-    // }
-    // @Delete('artist/:id')
-    // remove(@Param('id') id: string) {
-    //   return this.favouritesService.remove(id);
-    // }
 }

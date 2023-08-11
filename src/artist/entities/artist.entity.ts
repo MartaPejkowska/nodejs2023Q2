@@ -28,9 +28,9 @@ export class ArtistEntity {
     })
     albums: AlbumEntity[];
 
-    @OneToMany(() => FavouriteEntity, (favourite) => favourite.artists, {
-        cascade: true,
-        nullable: true,
-    })
-    favourites: FavouriteEntity[];
+    // @OneToMany(() => FavouriteEntity, (favourite) => favourite.artists, {
+    //     cascade: true,
+    //     nullable: true,
+    // })
+    // favourites: FavouriteEntity[];
 }

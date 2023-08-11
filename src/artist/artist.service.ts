@@ -33,6 +33,7 @@ export class ArtistService {
             grammy: grammy,
         };
         this.artistRepository.save(artist);
+
         return artist;
     }
 
