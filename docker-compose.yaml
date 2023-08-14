@@ -1,23 +1,38 @@
 version: '3.0'
 
 services:
-  app:
+  nest_app:
+    container_name: nest_app
     image: nodejs2023q2
     build: .
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      - DB_TYPE= postgres
+      - PG_HOST= ${PG_HOST}
+      - PG_USER= ${PG_USERNAME}
+      - PG_PASSWORD= ${PG_PASSWORD}
+      - PG_DB= ${PG_DATABASE}
+      - PG_PORT= ${PG_PORT}
     depends_on:
       - postgres
-    environment:
-      DATABASE_URL: postgres://username:password@localhost:5433/nestjs2023q2
-      PORT: 4000
-    ports:
-      - "3000:3000"
+    restart: always
 
 
   postgres:
-    image: postgres:10.4
+    container_name: postgres
+    image: postgres:12
     ports:
-      - "35000:5433"
+      - ${PG_PORT}:${PG_PORT}
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRESS_DB: nestjs2023q2
+      - PG_USER= ${PG_USERNAME}
+      - POSTGRES_PASSWORD= ${PG_PASSWORD}
+      - PG_DB= ${PG_DATABASE}
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - pglogs:/var/log/postsgresql
+
+volumes:
+   pgdata: {}
+   pglogs: {}

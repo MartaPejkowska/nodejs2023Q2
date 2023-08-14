@@ -6,17 +6,26 @@ Clone this repository :
 git clone https://github.com/MartaPejkowska/nodejs2023Q2-service.git
 ```
 
-## Installing NPM modules
+## Preparing application
+
+change branch to 'part-2'
+
+In terminal write:
 
 ```
 npm install
 ```
+In a root directory create .env file and copy content from env.example
 
 ## Running application
-In a root directory create .env file and put there e.g PORT=4000
+
+To create container in terminal write:
 ```
-npm start
+docker-compose up -d
 ```
+
+To stop and clean container write:
+docker-compose down --volumes
 
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/api.
