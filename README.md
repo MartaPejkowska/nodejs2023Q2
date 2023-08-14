@@ -25,8 +25,9 @@ docker-compose up -d
 ```
 
 To stop and clean container write:
+```
 docker-compose down --volumes
-
+```
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/api.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
