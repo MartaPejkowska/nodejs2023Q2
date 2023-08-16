@@ -53,6 +53,7 @@ let UsersService = class UsersService {
         return userWP;
     }
     async create(createUserDto) {
+        console.log('in create');
         if (!createUserDto.login || !createUserDto.password) {
             throw new common_1.BadRequestException('Login and password are required');
         }

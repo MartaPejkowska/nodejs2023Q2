@@ -48,6 +48,7 @@ export class UsersService {
     }
 
     async create(@Body() createUserDto: CreateUserDto) {
+        console.log('in create')
         if (!createUserDto.login || !createUserDto.password) {
             throw new BadRequestException('Login and password are required');
         }

@@ -23,8 +23,6 @@ let LoggerMiddleware = class LoggerMiddleware {
             fs.writeFile(pathToFile, message, { flag: 'a+' }, function (err) {
                 if (err)
                     throw new Error('FS operation failed');
-                else
-                    console.log('logs added to file');
             });
         });
         next();

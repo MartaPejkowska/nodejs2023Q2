@@ -18,6 +18,7 @@ const favourites_module_1 = require("./favourites/favourites.module");
 const typeorm_1 = require("@nestjs/typeorm");
 const config_1 = require("@nestjs/config");
 const loggerMiddleware_1 = require("./logger/loggerMiddleware");
+const auth_module_1 = require("./authorization/auth.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(loggerMiddleware_1.LoggerMiddleware).forRoutes('*');
@@ -26,6 +27,7 @@ let AppModule = class AppModule {
 AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            auth_module_1.AuthModule,
             users_module_1.UsersModule,
             artist_module_1.ArtistModule,
             tracks_module_1.TracksModule,

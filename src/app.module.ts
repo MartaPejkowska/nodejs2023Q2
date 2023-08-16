@@ -10,9 +10,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 
 import { LoggerMiddleware } from './logger/loggerMiddleware';
+import { AuthModule } from './authorization/auth.module';
 
 @Module({
     imports: [
+        AuthModule,
         UsersModule,
         ArtistModule,
         TracksModule,

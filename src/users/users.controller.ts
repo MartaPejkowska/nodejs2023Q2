@@ -11,12 +11,14 @@ import {
     HttpStatus,
     UseInterceptors,
     ClassSerializerInterceptor,
+    UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { UserEntity } from './entity/user.entity';
 import { ApiOkResponse } from '@nestjs/swagger';
+// import { AuthGuard } from 'src/authorization/auth.guard';
 
 
 @Controller('user')
@@ -24,7 +26,7 @@ export class UsersController {
     constructor(private usersService: UsersService) {}
     @Get()
     @ApiOkResponse({ type: UserEntity })
-
+    // @UseGuards(AuthGuard)
     @UseInterceptors(ClassSerializerInterceptor)
     async findAll(): Promise<UserEntity[]> {
         return await this.usersService.findAll();
