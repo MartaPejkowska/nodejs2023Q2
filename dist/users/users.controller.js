@@ -42,8 +42,6 @@ let UsersController = class UsersController {
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOkResponse)({ type: user_entity_1.UserEntity }),
-    (0, common_1.Header)('Content-Type', 'application/json'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, common_1.UseInterceptors)(common_1.ClassSerializerInterceptor),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -51,8 +49,6 @@ __decorate([
 ], UsersController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    (0, common_1.Header)('Content-Type', 'application/json'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -60,8 +56,6 @@ __decorate([
 ], UsersController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Post)(),
-    (0, common_1.Header)('Content-Type', 'application/json'),
-    (0, common_1.HttpCode)(201),
     (0, common_1.UseInterceptors)(common_1.ClassSerializerInterceptor),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -70,8 +64,6 @@ __decorate([
 ], UsersController.prototype, "create", null);
 __decorate([
     (0, common_1.Put)(':id'),
-    (0, common_1.Header)('Content-Type', 'application/json'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -80,7 +72,6 @@ __decorate([
 ], UsersController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
-    (0, common_1.Header)('Content-Type', 'application/json'),
     (0, common_1.HttpCode)(204),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),

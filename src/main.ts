@@ -3,11 +3,17 @@ import { AppModule } from './app.module';
 import 'dotenv/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { MyLogger } from './logger/logger.service';
+
+
 
 const PORT = process.env.PORT || 4000;
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+        bufferLogs: true,
+    });
+    app.useLogger(app.get(MyLogger));
 
     const config = new DocumentBuilder()
         .setTitle('Home Library Service')

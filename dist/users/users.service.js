@@ -31,7 +31,11 @@ const uuid_1 = require("uuid");
 const isIdValid_1 = require("../utils/isIdValid");
 const typeorm_1 = require("typeorm");
 const typeorm_2 = require("@nestjs/typeorm");
+const logger_service_1 = require("../logger/logger.service");
 let UsersService = class UsersService {
+    constructor() {
+        this.logger = new logger_service_1.MyLogger('User');
+    }
     async findAll() {
         const users = await this.userRepository.find();
         return users;

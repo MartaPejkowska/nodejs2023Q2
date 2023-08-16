@@ -13,15 +13,24 @@ import { isIdValid } from 'src/utils/isIdValid';
 // import { users } from 'src/db/database';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { MyLogger } from 'src/logger/logger.service';
+
 
 @Injectable()
 export class UsersService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>;
     // users: UserEntity[] = users;
+    private readonly logger = new MyLogger('User');
+
 
     async findAll(): Promise<UserEntity[]> {
+
         const users = await this.userRepository.find();
+
+        // this.logger.customLog(req)
+
+        // this.logger.log(`Url: ${req.originalUrl}, query parameters: ${JSON.stringify(req.query)}, body: ${JSON.stringify(req.body)}`)
         return users;
     }
 
@@ -53,7 +62,6 @@ export class UsersService {
         this.userRepository.save(user);
         const { password, ...userWP } = user;
         console.log(user)
-
         return userWP;
     }
 

@@ -17,7 +17,11 @@ const albums_module_1 = require("./albums/albums.module");
 const favourites_module_1 = require("./favourites/favourites.module");
 const typeorm_1 = require("@nestjs/typeorm");
 const config_1 = require("@nestjs/config");
+const loggerMiddleware_1 = require("./logger/loggerMiddleware");
 let AppModule = class AppModule {
+    configure(consumer) {
+        consumer.apply(loggerMiddleware_1.LoggerMiddleware).forRoutes('*');
+    }
 };
 AppModule = __decorate([
     (0, common_1.Module)({

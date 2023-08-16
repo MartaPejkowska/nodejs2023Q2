@@ -5,9 +5,13 @@ const app_module_1 = require("./app.module");
 require("dotenv/config");
 const swagger_1 = require("@nestjs/swagger");
 const common_1 = require("@nestjs/common");
+const logger_service_1 = require("./logger/logger.service");
 const PORT = process.env.PORT || 4000;
 async function bootstrap() {
-    const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    const app = await core_1.NestFactory.create(app_module_1.AppModule, {
+        bufferLogs: true,
+    });
+    app.useLogger(app.get(logger_service_1.MyLogger));
     const config = new swagger_1.DocumentBuilder()
         .setTitle('Home Library Service')
         .setDescription('Home music library service')
