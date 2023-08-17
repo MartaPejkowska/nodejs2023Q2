@@ -16,11 +16,11 @@ export declare class TracksController {
     update(id: string, updateTrackDto: UpdateTrackDto): Promise<{
         id: string;
         name: string;
+        artist: import("../artist/entities/artist.entity").ArtistEntity;
         artistId: string;
+        album: import("../albums/entities/album.entity").AlbumEntity;
         albumId: string;
         duration: number;
-        album: import("../albums/entities/album.entity").AlbumEntity;
-        artist: import("../artist/entities/artist.entity").ArtistEntity;
     }>;
     remove(id: string): Promise<string>;
 }

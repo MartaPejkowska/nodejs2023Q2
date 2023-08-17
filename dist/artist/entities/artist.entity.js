@@ -11,8 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ArtistEntity = void 0;
 const typeorm_1 = require("typeorm");
-const track_entity_1 = require("../../tracks/entities/track.entity");
-const album_entity_1 = require("../../albums/entities/album.entity");
 let ArtistEntity = class ArtistEntity {
 };
 __decorate([
@@ -27,18 +25,6 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Boolean)
 ], ArtistEntity.prototype, "grammy", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => track_entity_1.TrackEntity, (track) => track.artist, {
-        cascade: true,
-    }),
-    __metadata("design:type", Array)
-], ArtistEntity.prototype, "tracks", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => album_entity_1.AlbumEntity, (album) => album.artist, {
-        cascade: true,
-    }),
-    __metadata("design:type", Array)
-], ArtistEntity.prototype, "albums", void 0);
 ArtistEntity = __decorate([
     (0, typeorm_1.Entity)()
 ], ArtistEntity);

@@ -13,6 +13,7 @@ const albums_controller_1 = require("./albums.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const album_entity_1 = require("./entities/album.entity");
 const artist_entity_1 = require("../artist/entities/artist.entity");
+const track_entity_1 = require("../tracks/entities/track.entity");
 let AlbumsModule = class AlbumsModule {
 };
 AlbumsModule = __decorate([
@@ -20,6 +21,7 @@ AlbumsModule = __decorate([
         imports: [
             typeorm_1.TypeOrmModule.forFeature([album_entity_1.AlbumEntity]),
             typeorm_1.TypeOrmModule.forFeature([artist_entity_1.ArtistEntity]),
+            typeorm_1.TypeOrmModule.forFeature([track_entity_1.TrackEntity]),
         ],
         controllers: [albums_controller_1.AlbumsController],
         providers: [albums_service_1.AlbumsService],

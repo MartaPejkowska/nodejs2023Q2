@@ -16,8 +16,10 @@ const uuid_1 = require("uuid");
 const isIdValid_1 = require("../utils/isIdValid");
 const typeorm_1 = require("typeorm");
 const typeorm_2 = require("@nestjs/typeorm");
+const track_entity_1 = require("../tracks/entities/track.entity");
+const album_entity_1 = require("../albums/entities/album.entity");
 let ArtistService = class ArtistService {
-    create(createArtistDto) {
+    async create(createArtistDto) {
         const { name, grammy } = createArtistDto;
         if (!name ||
             !grammy ||
@@ -30,7 +32,7 @@ let ArtistService = class ArtistService {
             name: name,
             grammy: grammy,
         };
-        this.artistRepository.save(artist);
+        await this.artistRepository.save(artist);
         return artist;
     }
     async findAll() {
@@ -72,7 +74,7 @@ let ArtistService = class ArtistService {
         updatedArtist.grammy
             ? (updatedArtist.grammy = updateArtistDto.grammy)
             : (updatedArtist.grammy = updatedArtist.grammy);
-        this.artistRepository.save(updatedArtist);
+        await this.artistRepository.save(updatedArtist);
         return updatedArtist;
     }
     async remove(id) {
@@ -83,7 +85,9 @@ let ArtistService = class ArtistService {
         if (!artist) {
             throw new common_1.NotFoundException('Not found');
         }
-        this.artistRepository.delete(artist);
+        await this.albumRepository.update({ artistId: id }, { artistId: null });
+        await this.trackRepository.update({ artistId: id }, { artistId: null });
+        await this.artistRepository.delete(artist);
         return `removed artist with id: ${id}`;
     }
 };
@@ -91,6 +95,14 @@ __decorate([
     (0, typeorm_2.InjectRepository)(artist_entity_1.ArtistEntity),
     __metadata("design:type", typeorm_1.Repository)
 ], ArtistService.prototype, "artistRepository", void 0);
+__decorate([
+    (0, typeorm_2.InjectRepository)(track_entity_1.TrackEntity),
+    __metadata("design:type", typeorm_1.Repository)
+], ArtistService.prototype, "trackRepository", void 0);
+__decorate([
+    (0, typeorm_2.InjectRepository)(album_entity_1.AlbumEntity),
+    __metadata("design:type", typeorm_1.Repository)
+], ArtistService.prototype, "albumRepository", void 0);
 ArtistService = __decorate([
     (0, common_1.Injectable)()
 ], ArtistService);

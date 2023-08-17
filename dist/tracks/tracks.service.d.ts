@@ -19,11 +19,11 @@ export declare class TracksService {
     update(id: string, updateTrackDto: UpdateTrackDto): Promise<{
         id: string;
         name: string;
+        artist: ArtistEntity;
         artistId: string;
+        album: AlbumEntity;
         albumId: string;
         duration: number;
-        album: AlbumEntity;
-        artist: ArtistEntity;
     }>;
     remove(id: string): Promise<string>;
 }

@@ -30,8 +30,6 @@ export class AuthGuard implements CanActivate {
             const payload = await this.jwtService.verifyAsync(token, {
                 secret: process.env.JWT_SECRET_KEY,
             });
-            // 💡 We're assigning the payload to the request object here
-            // so that we can access it in our route handlers
             request['user'] = payload;
         } catch {
             throw new UnauthorizedException();
@@ -40,34 +38,7 @@ export class AuthGuard implements CanActivate {
     }
 
     private extractTokenFromHeader(request: Request): string | undefined {
-        console.log('request.headers.authorization', request.headers.authorization);
         const [type, token] = request.headers.authorization?.split(' ') ?? [];
         return type === 'Bearer' ? token : undefined;
     }
 }
-
-// import { Injectable, ExecutionContext } from '@nestjs/common';
-// import { AuthGuard, IAuthGuard } from '@nestjs/passport';
-// import { Request } from 'express';
-// import { UserEntity } from 'src/users/entity/user.entity';
-
-// @Injectable()
-// export class JwtAuthGuard extends AuthGuard('jwt') implements IAuthGuard {
-//   public handleRequest(err: unknown, user: UserEntity): any {
-//     return user;
-//   }
-
-//   public async canActivate(context: ExecutionContext): Promise<boolean> {
-//     await super.canActivate(context);
-
-//     const { user} : Request = context.switchToHttp().getRequest();
-
-//     if(!user) return false;
-
-//     if(user instanceof UserEntity) {
-//       return true
-//     }
-//     return  false;
-//   }
-
-// }

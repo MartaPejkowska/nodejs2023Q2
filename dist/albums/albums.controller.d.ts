@@ -18,7 +18,6 @@ export declare class AlbumsController {
         year: number;
         artistId: string;
         artist: import("../artist/entities/artist.entity").ArtistEntity;
-        tracks: import("../tracks/entities/track.entity").TrackEntity[];
     }>;
     remove(id: string): Promise<string>;
 }

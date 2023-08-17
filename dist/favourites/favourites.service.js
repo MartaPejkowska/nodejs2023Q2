@@ -21,6 +21,9 @@ const track_entity_1 = require("../tracks/entities/track.entity");
 const album_entity_1 = require("../albums/entities/album.entity");
 const artist_entity_1 = require("../artist/entities/artist.entity");
 const favourite_entity_1 = require("./entities/favourite.entity");
+const artist_service_1 = require("../artist/artist.service");
+const albums_service_1 = require("../albums/albums.service");
+const tracks_service_1 = require("../tracks/tracks.service");
 let FavouritesService = class FavouritesService {
     constructor(artistFavRepository, artistRepository, trackFavRepository, trackRepository, albumFavRepository, albumRepository) {
         this.artistFavRepository = artistFavRepository;
@@ -40,7 +43,9 @@ let FavouritesService = class FavouritesService {
             if (!track) {
                 throw new common_1.UnprocessableEntityException('There is no such track');
             }
-            this.trackFavRepository.save({ trackId: trackId });
+            const trackFav = new favourite_entity_1.TrackFav();
+            trackFav.track = track;
+            await this.trackFavRepository.save(trackFav);
             return `Succesfully added ${track.name} to favourites`;
         }
         else if (params.func === 'album') {
@@ -52,7 +57,9 @@ let FavouritesService = class FavouritesService {
             if (!album) {
                 throw new common_1.UnprocessableEntityException('There is no such album');
             }
-            this.albumFavRepository.save({ albumId: albumId });
+            const albumFav = new favourite_entity_1.AlbumFav();
+            albumFav.album = album;
+            await this.albumFavRepository.save(albumFav);
             return `Succesfully added ${album.name} to favourites`;
         }
         else if (params.func === 'artist') {
@@ -64,7 +71,9 @@ let FavouritesService = class FavouritesService {
             if (!artist) {
                 throw new common_1.UnprocessableEntityException('There is no such artist');
             }
-            this.artistFavRepository.save({ artistId: artistId });
+            const artistFav = new favourite_entity_1.ArtistFav();
+            artistFav.artist = artist;
+            await this.artistFavRepository.save(artistFav);
             return `Succesfully added ${artist.name} to favourites`;
         }
     }
@@ -85,43 +94,56 @@ let FavouritesService = class FavouritesService {
     }
     async remove(params) {
         if (params.func === 'track') {
+            console.log(params);
             const trackId = params.id;
             (0, isIdValid_1.isIdValid)(trackId);
-            const track = await this.trackRepository.findOne({
-                where: { id: trackId },
+            const track = await this.trackFavRepository.findOne({
+                where: { trackId },
             });
             if (!track) {
-                throw new common_1.UnprocessableEntityException('There is no such track');
+                throw new common_1.UnprocessableEntityException('There is no such track in favourites');
             }
-            this.trackFavRepository.delete({ trackId: trackId });
-            return `Succesfully removed ${track.name} from favourites`;
+            await this.trackFavRepository.delete(track.id);
+            return `Succesfully removed ${track} from favourites`;
         }
         else if (params.func === 'album') {
             const albumId = params.id;
             (0, isIdValid_1.isIdValid)(albumId);
-            const album = await this.albumRepository.findOne({
-                where: { id: albumId },
+            const album = await this.albumFavRepository.findOne({
+                where: { albumId },
             });
             if (!album) {
-                throw new common_1.UnprocessableEntityException('There is no such album');
+                throw new common_1.UnprocessableEntityException('There is no such album in favourites');
             }
-            this.albumFavRepository.delete({ albumId: albumId });
-            return `Succesfully removed ${album.name} from favourites`;
+            await this.albumFavRepository.delete(album.id);
+            return `Succesfully removed ${album} from favourites`;
         }
         else if (params.func === 'artist') {
             const artistId = params.id;
             (0, isIdValid_1.isIdValid)(artistId);
-            const artist = await this.artistRepository.findOne({
-                where: { id: artistId },
+            const artist = await this.artistFavRepository.findOne({
+                where: { artistId },
             });
             if (!artist) {
-                throw new common_1.UnprocessableEntityException('There is no such artist');
+                throw new common_1.UnprocessableEntityException('There is no such artist in favourites');
             }
-            this.artistFavRepository.delete({ artistId: artistId });
-            return `Succesfully removed ${artist.name} from favourites`;
+            this.artistFavRepository.delete(artist.id);
+            return `Succesfully removed ${artist} from favourites`;
         }
     }
 };
+__decorate([
+    (0, common_1.Inject)(artist_service_1.ArtistService),
+    __metadata("design:type", artist_service_1.ArtistService)
+], FavouritesService.prototype, "artistService", void 0);
+__decorate([
+    (0, common_1.Inject)(albums_service_1.AlbumsService),
+    __metadata("design:type", albums_service_1.AlbumsService)
+], FavouritesService.prototype, "albumsService", void 0);
+__decorate([
+    (0, common_1.Inject)(tracks_service_1.TracksService),
+    __metadata("design:type", tracks_service_1.TracksService)
+], FavouritesService.prototype, "tracksService", void 0);
 FavouritesService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(favourite_entity_1.ArtistFav)),

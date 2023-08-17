@@ -10,12 +10,21 @@ import { v4 as uuidv4 } from 'uuid';
 import { isIdValid } from 'src/utils/isIdValid';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { TrackEntity } from 'src/tracks/entities/track.entity';
+import { AlbumEntity } from 'src/albums/entities/album.entity';
 
 @Injectable()
 export class ArtistService {
     @InjectRepository(ArtistEntity)
     private readonly artistRepository: Repository<ArtistEntity>;
-    create(createArtistDto: CreateArtistDto) {
+
+    @InjectRepository(TrackEntity)
+    private readonly trackRepository: Repository<TrackEntity>;
+
+    @InjectRepository(AlbumEntity)
+    private readonly albumRepository: Repository<AlbumEntity>;
+
+    async create(createArtistDto: CreateArtistDto) {
         const { name, grammy } = createArtistDto;
 
         if (
@@ -32,7 +41,7 @@ export class ArtistService {
             name: name,
             grammy: grammy,
         };
-        this.artistRepository.save(artist);
+        await this.artistRepository.save(artist);
 
         return artist;
     }
@@ -59,7 +68,6 @@ export class ArtistService {
             where: { id: id },
         });
 
-
         if (!artist) {
             throw new NotFoundException('Not found');
         }
@@ -82,7 +90,6 @@ export class ArtistService {
             }
         }
 
-
         updateArtistDto.name
             ? (updatedArtist.name = updateArtistDto.name)
             : (updatedArtist.name = updatedArtist.name);
@@ -90,8 +97,7 @@ export class ArtistService {
             ? (updatedArtist.grammy = updateArtistDto.grammy)
             : (updatedArtist.grammy = updatedArtist.grammy);
 
-
-        this.artistRepository.save(updatedArtist);
+        await this.artistRepository.save(updatedArtist);
         return updatedArtist;
     }
 
@@ -103,7 +109,9 @@ export class ArtistService {
         if (!artist) {
             throw new NotFoundException('Not found');
         }
-        this.artistRepository.delete(artist);
+        await this.albumRepository.update({ artistId: id }, { artistId: null });
+        await this.trackRepository.update({ artistId: id }, { artistId: null });
+        await this.artistRepository.delete(artist);
         return `removed artist with id: ${id}`;
     }
 }

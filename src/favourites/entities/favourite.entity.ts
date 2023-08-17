@@ -1,12 +1,38 @@
 import { AlbumEntity } from 'src/albums/entities/album.entity';
 import { ArtistEntity } from 'src/artist/entities/artist.entity';
 import { TrackEntity } from 'src/tracks/entities/track.entity';
-import { Entity, Column, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Entity,
+    Column,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    JoinTable,
+    OneToOne,
+    JoinColumn,
+} from 'typeorm';
 
+@Entity()
 export class FavouriteEntity {
+    @PrimaryGeneratedColumn()
+    id: string;
+
+    @ManyToOne(() => ArtistEntity)
+    @JoinTable()
+    artist: ArtistEntity;
+
+    @ManyToOne(() => AlbumEntity)
+    @JoinTable()
+    album: AlbumEntity;
+
+    @ManyToOne(() => TrackEntity)
+    @JoinTable()
+    track: TrackEntity;
+}
+
+export interface FavoritesResponse {
+    artists: ArtistEntity[];
     albums: AlbumEntity[];
     tracks: TrackEntity[];
-    artists: ArtistEntity[];
 }
 
 @Entity('track-fav')
@@ -17,7 +43,10 @@ export class TrackFav {
     @Column({ nullable: true })
     trackId: string | null;
 
-    @ManyToOne(() => TrackEntity, { onDelete: 'SET NULL', eager: true })
+    @OneToOne(() => TrackEntity, (track) => track.id, {
+        onDelete: 'CASCADE',
+    })
+    @JoinColumn()
     track: TrackEntity;
 }
 
@@ -29,7 +58,10 @@ export class ArtistFav {
     @Column({ nullable: true })
     artistId: string | null;
 
-    @ManyToOne(() => ArtistEntity, { onDelete: 'SET NULL', eager: true })
+    @OneToOne(() => ArtistEntity, (artist) => artist.id, {
+        onDelete: 'CASCADE',
+    })
+    @JoinColumn()
     artist: ArtistEntity;
 }
 
@@ -41,7 +73,9 @@ export class AlbumFav {
     @Column({ nullable: true })
     albumId: string | null;
 
-    @ManyToOne(() => AlbumEntity, { onDelete: 'SET NULL', eager: true })
+    @OneToOne(() => AlbumEntity, (album) => album.id, {
+        onDelete: 'CASCADE',
+    })
+    @JoinColumn()
     album: AlbumEntity;
 }
-

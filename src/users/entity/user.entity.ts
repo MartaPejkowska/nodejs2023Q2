@@ -1,11 +1,5 @@
 import { Exclude } from 'class-transformer';
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    CreateDateColumn,
-    UpdateDateColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
 export class UserEntity {
@@ -22,7 +16,6 @@ export class UserEntity {
     @Column({
         type: 'varchar',
         nullable: false,
-
     })
     @Exclude()
     password: string;
@@ -30,10 +23,10 @@ export class UserEntity {
     @Column({ nullable: false, default: 1 })
     version: number;
 
-    @Column('bigint',{ nullable: true})
+    @Column('bigint', { nullable: true })
     createdAt: number;
 
-    @Column('bigint',{ nullable: true})
+    @Column('bigint', { nullable: true })
     updatedAt: number;
 
     constructor(partial: Partial<UserEntity>) {

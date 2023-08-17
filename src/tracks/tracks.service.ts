@@ -8,18 +8,13 @@ import { UpdateTrackDto } from './dto/update-track.dto';
 import { TrackEntity } from './entities/track.entity';
 import { isIdValid } from 'src/utils/isIdValid';
 import { v4 as uuidv4 } from 'uuid';
-import { Repository, EntityManager } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ArtistEntity } from 'src/artist/entities/artist.entity';
 import { AlbumEntity } from 'src/albums/entities/album.entity';
 
 @Injectable()
 export class TracksService {
-    // constructor(
-    //     @InjectRepository(TrackEntity)
-    //     private readonly trackRepository: Repository<TrackEntity>,
-    //     private readonly entityManager: EntityManager,
-    // ) {}
     @InjectRepository(TrackEntity)
     private readonly trackRepository: Repository<TrackEntity>;
     @InjectRepository(ArtistEntity)
@@ -61,13 +56,12 @@ export class TracksService {
             );
         }
 
-        this.trackRepository.save(
+        await this.trackRepository.save(
             this.trackRepository.create({
                 ...track,
             }),
         );
-        // this.entityManager.save(track); /// poczytać
-        console.log('create track',track)
+
         return track;
     }
 
@@ -81,7 +75,7 @@ export class TracksService {
         const track = await this.trackRepository.findOne({
             where: { id: id },
         });
-        console.log('track one', track)
+        console.log('track one', track);
         if (!track) {
             throw new NotFoundException('Not found');
         }
@@ -139,7 +133,7 @@ export class TracksService {
         if (!track) {
             throw new NotFoundException('Not found');
         }
-        this.trackRepository.remove(track);
+        await this.trackRepository.remove(track);
         return `Removed track with id: ${id}`;
     }
 }

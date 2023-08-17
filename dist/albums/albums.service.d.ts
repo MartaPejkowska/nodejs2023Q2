@@ -5,6 +5,7 @@ import { ArtistEntity } from 'src/artist/entities/artist.entity';
 export declare class AlbumsService {
     private readonly albumRepository;
     private artistRepository;
+    private trackRepository;
     create(createAlbumDto: CreateAlbumDto): Promise<{
         id: string;
         name: string;
@@ -19,7 +20,6 @@ export declare class AlbumsService {
         year: number;
         artistId: string;
         artist: ArtistEntity;
-        tracks: import("../tracks/entities/track.entity").TrackEntity[];
     }>;
     remove(id: string): Promise<string>;
 }

@@ -24,9 +24,19 @@ __decorate([
     __metadata("design:type", String)
 ], TrackEntity.prototype, "name", void 0);
 __decorate([
+    (0, typeorm_1.ManyToOne)(() => artist_entity_1.ArtistEntity),
+    (0, typeorm_1.JoinColumn)({ name: 'artistId' }),
+    __metadata("design:type", artist_entity_1.ArtistEntity)
+], TrackEntity.prototype, "artist", void 0);
+__decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], TrackEntity.prototype, "artistId", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => album_entity_1.AlbumEntity),
+    (0, typeorm_1.JoinColumn)({ name: 'albumId' }),
+    __metadata("design:type", album_entity_1.AlbumEntity)
+], TrackEntity.prototype, "album", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
@@ -35,18 +45,6 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], TrackEntity.prototype, "duration", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => album_entity_1.AlbumEntity, (album) => album.tracks, {
-        onDelete: 'SET NULL',
-    }),
-    __metadata("design:type", album_entity_1.AlbumEntity)
-], TrackEntity.prototype, "album", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => artist_entity_1.ArtistEntity, (artist) => artist.tracks, {
-        onDelete: 'SET NULL',
-    }),
-    __metadata("design:type", artist_entity_1.ArtistEntity)
-], TrackEntity.prototype, "artist", void 0);
 TrackEntity = __decorate([
     (0, typeorm_1.Entity)()
 ], TrackEntity);

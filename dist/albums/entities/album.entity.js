@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AlbumEntity = void 0;
 const artist_entity_1 = require("../../artist/entities/artist.entity");
-const track_entity_1 = require("../../tracks/entities/track.entity");
 const typeorm_1 = require("typeorm");
 let AlbumEntity = class AlbumEntity {
 };
@@ -32,17 +31,13 @@ __decorate([
     __metadata("design:type", String)
 ], AlbumEntity.prototype, "artistId", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => artist_entity_1.ArtistEntity, (artist) => artist.albums, {
-        onDelete: 'SET NULL',
+    (0, typeorm_1.OneToOne)(() => artist_entity_1.ArtistEntity, (artist) => artist.id, {
+        onDelete: 'CASCADE',
     }),
+    (0, typeorm_1.ManyToOne)(() => artist_entity_1.ArtistEntity),
+    (0, typeorm_1.JoinColumn)({ name: 'artistId' }),
     __metadata("design:type", artist_entity_1.ArtistEntity)
 ], AlbumEntity.prototype, "artist", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => track_entity_1.TrackEntity, (track) => track.album, {
-        cascade: true,
-    }),
-    __metadata("design:type", Array)
-], AlbumEntity.prototype, "tracks", void 0);
 AlbumEntity = __decorate([
     (0, typeorm_1.Entity)()
 ], AlbumEntity);

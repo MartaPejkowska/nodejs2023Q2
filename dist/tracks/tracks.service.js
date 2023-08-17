@@ -43,8 +43,7 @@ let TracksService = class TracksService {
             !createTrackDto.duration) {
             throw new common_1.BadRequestException('Duration should be number, name should be a string');
         }
-        this.trackRepository.save(this.trackRepository.create(Object.assign({}, track)));
-        console.log('create track', track);
+        await this.trackRepository.save(this.trackRepository.create(Object.assign({}, track)));
         return track;
     }
     async findAll() {
@@ -108,7 +107,7 @@ let TracksService = class TracksService {
         if (!track) {
             throw new common_1.NotFoundException('Not found');
         }
-        this.trackRepository.remove(track);
+        await this.trackRepository.remove(track);
         return `Removed track with id: ${id}`;
     }
 };

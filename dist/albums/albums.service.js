@@ -17,6 +17,7 @@ const isIdValid_1 = require("../utils/isIdValid");
 const typeorm_1 = require("typeorm");
 const typeorm_2 = require("@nestjs/typeorm");
 const artist_entity_1 = require("../artist/entities/artist.entity");
+const track_entity_1 = require("../tracks/entities/track.entity");
 let AlbumsService = class AlbumsService {
     async create(createAlbumDto) {
         const name = createAlbumDto.name;
@@ -43,8 +44,7 @@ let AlbumsService = class AlbumsService {
             year: year,
             artistId: artistId,
         };
-        this.albumRepository.save(this.albumRepository.create(Object.assign({}, album)));
-        console.log('create album', album);
+        await this.albumRepository.save(this.albumRepository.create(Object.assign({}, album)));
         return album;
     }
     async findAll() {
@@ -53,12 +53,9 @@ let AlbumsService = class AlbumsService {
     }
     async findOne(id) {
         (0, isIdValid_1.isIdValid)(id);
-        const album = await this.albumRepository.findOne({
-            where: { id: id },
-        });
-        console.log('album one', album);
+        const album = await this.albumRepository.findOne({ where: { id: id } });
         if (!album) {
-            throw new common_1.NotFoundException('Not found');
+            throw new common_1.NotFoundException('Album not found');
         }
         return album;
     }
@@ -91,7 +88,7 @@ let AlbumsService = class AlbumsService {
         updatedAlbum.year = updateAlbumDto.year || updatedAlbum.year;
         updatedAlbum.artistId =
             updateAlbumDto.artistId || updatedAlbum.artistId;
-        this.albumRepository.save(updatedAlbum);
+        await this.albumRepository.save(updatedAlbum);
         return updatedAlbum;
     }
     async remove(id) {
@@ -100,7 +97,8 @@ let AlbumsService = class AlbumsService {
         if (!album) {
             throw new common_1.NotFoundException('Not found');
         }
-        this.albumRepository.delete(album);
+        await this.trackRepository.update({ albumId: id }, { albumId: null });
+        await this.albumRepository.remove(album);
         return `removed album with id: ${id}`;
     }
 };
@@ -112,6 +110,10 @@ __decorate([
     (0, typeorm_2.InjectRepository)(artist_entity_1.ArtistEntity),
     __metadata("design:type", typeorm_1.Repository)
 ], AlbumsService.prototype, "artistRepository", void 0);
+__decorate([
+    (0, typeorm_2.InjectRepository)(track_entity_1.TrackEntity),
+    __metadata("design:type", typeorm_1.Repository)
+], AlbumsService.prototype, "trackRepository", void 0);
 AlbumsService = __decorate([
     (0, common_1.Injectable)()
 ], AlbumsService);

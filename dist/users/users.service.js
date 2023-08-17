@@ -32,6 +32,7 @@ const isIdValid_1 = require("../utils/isIdValid");
 const typeorm_1 = require("typeorm");
 const typeorm_2 = require("@nestjs/typeorm");
 const logger_service_1 = require("../logger/logger.service");
+const bcrypt = require("bcrypt");
 let UsersService = class UsersService {
     constructor() {
         this.logger = new logger_service_1.MyLogger('User');
@@ -45,7 +46,6 @@ let UsersService = class UsersService {
         const user = await this.userRepository.findOne({
             where: { id: id },
         });
-        console.log(user);
         if (!user) {
             throw new common_1.NotFoundException('Not found');
         }
@@ -65,7 +65,7 @@ let UsersService = class UsersService {
             createdAt: new Date().getTime(),
             updatedAt: new Date().getTime(),
         };
-        this.userRepository.save(user);
+        await this.userRepository.save(user);
         const { password } = user, userWP = __rest(user, ["password"]);
         console.log(user);
         return userWP;
@@ -80,20 +80,21 @@ let UsersService = class UsersService {
         }
         if (!body.oldPassword ||
             !body.newPassword ||
-            typeof body.oldPassword !== 'string' ||
             typeof body.newPassword !== 'string') {
             throw new common_1.BadRequestException('Old password and new password are required and must be a string');
         }
-        if (user.password !== body.oldPassword) {
+        console.log(bcrypt.compareSync(user.password, body.oldPassword));
+        if (bcrypt.compareSync(user.password, body.oldPassword)) {
+            user.password = body.newPassword;
+            user.updatedAt = new Date().getTime();
+            user.version++;
+            await this.userRepository.save(user);
+            const { password } = user, userWP = __rest(user, ["password"]);
+            return userWP;
+        }
+        else {
             throw new common_1.ForbiddenException('Wrong password');
         }
-        const updatedUser = Object.assign({}, user);
-        updatedUser.password = body.newPassword;
-        user.updatedAt = new Date().getTime();
-        updatedUser.version = updatedUser.version + 1;
-        this.userRepository.save(updatedUser);
-        const { password } = updatedUser, userWP = __rest(updatedUser, ["password"]);
-        return userWP;
     }
     async delete(id) {
         (0, isIdValid_1.isIdValid)(id);
@@ -104,7 +105,7 @@ let UsersService = class UsersService {
             throw new common_1.NotFoundException('Not found');
         }
         else {
-            this.userRepository.remove(user);
+            await this.userRepository.remove(user);
         }
     }
 };

@@ -10,27 +10,20 @@ import { UpdatePasswordDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { isIdValid } from 'src/utils/isIdValid';
-// import { users } from 'src/db/database';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MyLogger } from 'src/logger/logger.service';
-
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class UsersService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>;
-    // users: UserEntity[] = users;
+
     private readonly logger = new MyLogger('User');
 
-
     async findAll(): Promise<UserEntity[]> {
-
         const users = await this.userRepository.find();
-
-        // this.logger.customLog(req)
-
-        // this.logger.log(`Url: ${req.originalUrl}, query parameters: ${JSON.stringify(req.query)}, body: ${JSON.stringify(req.body)}`)
         return users;
     }
 
@@ -39,7 +32,7 @@ export class UsersService {
         const user = await this.userRepository.findOne({
             where: { id: id },
         });
-        console.log(user)
+
         if (!user) {
             throw new NotFoundException('Not found');
         }
@@ -48,7 +41,7 @@ export class UsersService {
     }
 
     async create(@Body() createUserDto: CreateUserDto) {
-        console.log('in create')
+        console.log('in create');
         if (!createUserDto.login || !createUserDto.password) {
             throw new BadRequestException('Login and password are required');
         }
@@ -60,9 +53,9 @@ export class UsersService {
             createdAt: new Date().getTime(),
             updatedAt: new Date().getTime(),
         };
-        this.userRepository.save(user);
+        await this.userRepository.save(user);
         const { password, ...userWP } = user;
-        console.log(user)
+        console.log(user);
         return userWP;
     }
 
@@ -79,27 +72,26 @@ export class UsersService {
         if (
             !body.oldPassword ||
             !body.newPassword ||
-            typeof body.oldPassword !== 'string' ||
+            // typeof body.oldPassword !== 'string' ||
             typeof body.newPassword !== 'string'
         ) {
             throw new BadRequestException(
                 'Old password and new password are required and must be a string',
             );
         }
+        console.log(bcrypt.compareSync(user.password, body.oldPassword))
+        if (bcrypt.compareSync(user.password, body.oldPassword)) {
 
-        if (user.password !== body.oldPassword) {
+            user.password = body.newPassword;
+            user.updatedAt = new Date().getTime();
+            user.version++;
+
+            await this.userRepository.save(user);
+            const { password, ...userWP } = user;
+            return userWP;
+        } else {
             throw new ForbiddenException('Wrong password');
         }
-
-        const updatedUser = { ...user };
-
-        updatedUser.password = body.newPassword;
-        user.updatedAt = new Date().getTime();
-        updatedUser.version = updatedUser.version + 1;
-
-        this.userRepository.save(updatedUser);
-        const { password, ...userWP } = updatedUser;
-        return userWP;
     }
 
     async delete(id: string) {
@@ -111,7 +103,7 @@ export class UsersService {
         if (!user) {
             throw new NotFoundException('Not found');
         } else {
-            this.userRepository.remove(user);
+            await this.userRepository.remove(user);
         }
     }
 }

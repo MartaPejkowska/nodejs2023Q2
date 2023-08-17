@@ -14,8 +14,30 @@ const album_entity_1 = require("../../albums/entities/album.entity");
 const artist_entity_1 = require("../../artist/entities/artist.entity");
 const track_entity_1 = require("../../tracks/entities/track.entity");
 const typeorm_1 = require("typeorm");
-class FavouriteEntity {
-}
+let FavouriteEntity = class FavouriteEntity {
+};
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", String)
+], FavouriteEntity.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => artist_entity_1.ArtistEntity),
+    (0, typeorm_1.JoinTable)(),
+    __metadata("design:type", artist_entity_1.ArtistEntity)
+], FavouriteEntity.prototype, "artist", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => album_entity_1.AlbumEntity),
+    (0, typeorm_1.JoinTable)(),
+    __metadata("design:type", album_entity_1.AlbumEntity)
+], FavouriteEntity.prototype, "album", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => track_entity_1.TrackEntity),
+    (0, typeorm_1.JoinTable)(),
+    __metadata("design:type", track_entity_1.TrackEntity)
+], FavouriteEntity.prototype, "track", void 0);
+FavouriteEntity = __decorate([
+    (0, typeorm_1.Entity)()
+], FavouriteEntity);
 exports.FavouriteEntity = FavouriteEntity;
 let TrackFav = class TrackFav {
 };
@@ -28,7 +50,10 @@ __decorate([
     __metadata("design:type", String)
 ], TrackFav.prototype, "trackId", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => track_entity_1.TrackEntity, { onDelete: 'SET NULL', eager: true }),
+    (0, typeorm_1.OneToOne)(() => track_entity_1.TrackEntity, (track) => track.id, {
+        onDelete: 'CASCADE',
+    }),
+    (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", track_entity_1.TrackEntity)
 ], TrackFav.prototype, "track", void 0);
 TrackFav = __decorate([
@@ -46,7 +71,10 @@ __decorate([
     __metadata("design:type", String)
 ], ArtistFav.prototype, "artistId", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => artist_entity_1.ArtistEntity, { onDelete: 'SET NULL', eager: true }),
+    (0, typeorm_1.OneToOne)(() => artist_entity_1.ArtistEntity, (artist) => artist.id, {
+        onDelete: 'CASCADE',
+    }),
+    (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", artist_entity_1.ArtistEntity)
 ], ArtistFav.prototype, "artist", void 0);
 ArtistFav = __decorate([
@@ -64,7 +92,10 @@ __decorate([
     __metadata("design:type", String)
 ], AlbumFav.prototype, "albumId", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => album_entity_1.AlbumEntity, { onDelete: 'SET NULL', eager: true }),
+    (0, typeorm_1.OneToOne)(() => album_entity_1.AlbumEntity, (album) => album.id, {
+        onDelete: 'CASCADE',
+    }),
+    (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", album_entity_1.AlbumEntity)
 ], AlbumFav.prototype, "album", void 0);
 AlbumFav = __decorate([

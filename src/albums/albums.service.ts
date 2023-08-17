@@ -11,6 +11,7 @@ import { isIdValid } from 'src/utils/isIdValid';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ArtistEntity } from 'src/artist/entities/artist.entity';
+import { TrackEntity } from 'src/tracks/entities/track.entity';
 
 @Injectable()
 export class AlbumsService {
@@ -18,6 +19,8 @@ export class AlbumsService {
     private readonly albumRepository: Repository<AlbumEntity>;
     @InjectRepository(ArtistEntity)
     private artistRepository: Repository<ArtistEntity>;
+    @InjectRepository(TrackEntity)
+    private trackRepository: Repository<TrackEntity>;
     async create(createAlbumDto: CreateAlbumDto) {
         const name = createAlbumDto.name;
         const year = createAlbumDto.year;
@@ -52,12 +55,11 @@ export class AlbumsService {
             year: year,
             artistId: artistId,
         };
-        this.albumRepository.save(
+        await this.albumRepository.save(
             this.albumRepository.create({
                 ...album,
             }),
         );
-        console.log('create album',album)
         return album;
     }
 
@@ -68,14 +70,12 @@ export class AlbumsService {
 
     async findOne(id: string) {
         isIdValid(id);
-        const album = await this.albumRepository.findOne({
-            where: { id: id },
-        });
-        console.log('album one', album)
+        const album = await this.albumRepository.findOne({ where: { id: id } });
 
         if (!album) {
-            throw new NotFoundException('Not found');
+            throw new NotFoundException('Album not found');
         }
+
         return album;
     }
 
@@ -114,7 +114,7 @@ export class AlbumsService {
         updatedAlbum.artistId =
             updateAlbumDto.artistId || updatedAlbum.artistId;
 
-        this.albumRepository.save(updatedAlbum);
+        await this.albumRepository.save(updatedAlbum);
         return updatedAlbum;
     }
 
@@ -124,7 +124,8 @@ export class AlbumsService {
         if (!album) {
             throw new NotFoundException('Not found');
         }
-        this.albumRepository.delete(album);
+        await this.trackRepository.update({ albumId: id }, { albumId: null });
+        await this.albumRepository.remove(album);
         return `removed album with id: ${id}`;
     }
 }
