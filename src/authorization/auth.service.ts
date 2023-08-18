@@ -27,8 +27,8 @@ export class AuthService {
     // @Inject(ConfigService)
     // private config: ConfigService;
 
-    async register(body: CreateUserDto): Promise<UserEntity | never> {
-        const { login, password }: CreateUserDto = body;
+    async register(body: CreateUserDto): Promise<Partial<UserEntity> | never> {
+
         // const user: UserEntity = await this.userRepository.findOneBy({
         //     login,
         // });
@@ -41,17 +41,17 @@ export class AuthService {
         // }
 
         if (
-            !login ||
-            !password ||
-            typeof login !== 'string' ||
-            typeof password !== 'string'
+            !body.login ||
+            !body.password ||
+            typeof body.login !== 'string' ||
+            typeof body.password !== 'string'
         ) {
             throw new BadRequestException(
                 'Login and password are required and must be a string',
             );
         }
         const hashPassword = await bcrypt.hash(
-            password,
+            body.password,
             +process.env.CRYPT_SALT,
         );
 
@@ -63,11 +63,11 @@ export class AuthService {
             createdAt: new Date().getTime(),
             updatedAt: new Date().getTime(),
         };
+        console.log(newUser)
 
-        return this.userRepository.save(newUser).then((user) => {
-            // const token = this.helper.generateToken(user);
-            return user;
-        });
+        await this.userRepository.save(newUser);
+        const { password, ...userWP } = newUser;
+        return userWP;
     }
 
     public async login(body: CreateUserDto) {
@@ -103,8 +103,7 @@ export class AuthService {
         return this.helper.generateToken(user);
     }
 
-    // public async refresh(user: User): Promise<string> {
-    //     this.repository.update(user.id, { lastLoginAt: new Date() });
+    // public async refresh(user: UserEntity): Promise<string> {
 
     //     return this.helper.generateToken(user);
     // }

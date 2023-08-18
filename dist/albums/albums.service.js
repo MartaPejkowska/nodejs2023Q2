@@ -65,13 +65,13 @@ let AlbumsService = class AlbumsService {
             where: { id: id },
         });
         if (!album) {
-            throw new common_1.NotFoundException('Not found');
+            throw new common_1.NotFoundException('Album not found');
         }
         const { name, year, artistId } = updateAlbumDto;
         const updatedAlbum = Object.assign({}, album);
         if (updateAlbumDto.name) {
             if (typeof name !== 'string') {
-                throw new common_1.BadRequestException('Name should be a atring');
+                throw new common_1.BadRequestException('Name should be a string');
             }
         }
         if (updateAlbumDto.year) {
@@ -95,7 +95,7 @@ let AlbumsService = class AlbumsService {
         (0, isIdValid_1.isIdValid)(id);
         const album = await this.albumRepository.findOne({ where: { id: id } });
         if (!album) {
-            throw new common_1.NotFoundException('Not found');
+            throw new common_1.NotFoundException('Album not found');
         }
         await this.trackRepository.update({ albumId: id }, { albumId: null });
         await this.albumRepository.remove(album);

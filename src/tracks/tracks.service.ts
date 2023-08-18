@@ -77,7 +77,7 @@ export class TracksService {
         });
         console.log('track one', track);
         if (!track) {
-            throw new NotFoundException('Not found');
+            throw new NotFoundException('Track not found');
         }
         return track;
     }
@@ -89,7 +89,7 @@ export class TracksService {
         });
 
         if (!track) {
-            throw new NotFoundException('Not found');
+            throw new NotFoundException('Track not found');
         }
 
         const updatedTrack = { ...track };
@@ -131,7 +131,7 @@ export class TracksService {
             where: { id: id },
         });
         if (!track) {
-            throw new NotFoundException('Not found');
+            throw new NotFoundException('Track not found');
         }
         await this.trackRepository.remove(track);
         return `Removed track with id: ${id}`;

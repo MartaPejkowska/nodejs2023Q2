@@ -25,7 +25,7 @@ export class AuthController {
 
     @Public()
     @Post('signup')
-    register(@Body() body: CreateUserDto): Promise<UserEntity | never> {
+    register(@Body() body: CreateUserDto): Promise<Partial<UserEntity> | never> {
         return this.authService.register(body);
     }
 
@@ -37,9 +37,8 @@ export class AuthController {
     }
 
     // @Post('refresh')
-    // @UseGuards(JwtAuthGuard)
     // @UseInterceptors(ClassSerializerInterceptor)
     // private refresh(@Req() { user }: Request): Promise<string | never> {
-    //     return this.service.refresh(<User>user);
+    //     return this.authService.refresh(<UserEntity>user);
     // }
 }

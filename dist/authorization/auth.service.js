@@ -8,6 +8,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
@@ -19,14 +30,13 @@ const auth_helper_1 = require("./auth.helper");
 const user_entity_1 = require("../users/entity/user.entity");
 let AuthService = class AuthService {
     async register(body) {
-        const { login, password } = body;
-        if (!login ||
-            !password ||
-            typeof login !== 'string' ||
-            typeof password !== 'string') {
+        if (!body.login ||
+            !body.password ||
+            typeof body.login !== 'string' ||
+            typeof body.password !== 'string') {
             throw new common_1.BadRequestException('Login and password are required and must be a string');
         }
-        const hashPassword = await bcrypt.hash(password, +process.env.CRYPT_SALT);
+        const hashPassword = await bcrypt.hash(body.password, +process.env.CRYPT_SALT);
         const newUser = {
             id: (0, uuid_1.v4)(),
             login: body.login,
@@ -35,9 +45,10 @@ let AuthService = class AuthService {
             createdAt: new Date().getTime(),
             updatedAt: new Date().getTime(),
         };
-        return this.userRepository.save(newUser).then((user) => {
-            return user;
-        });
+        console.log(newUser);
+        await this.userRepository.save(newUser);
+        const { password } = newUser, userWP = __rest(newUser, ["password"]);
+        return userWP;
     }
     async login(body) {
         const { login, password } = body;

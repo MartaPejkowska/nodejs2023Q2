@@ -1,68 +1,61 @@
-// import { Injectable, LoggerService } from '@nestjs/common';
-import { Injectable, Scope, ConsoleLogger } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
+import { LoggerService } from '@nestjs/common';
+import { writeFile } from 'fs/promises';
 
-// export class MyLogger implements LoggerService {
-//     /**
-//      * Write a 'log' level log.
-//      */
-//     log(message: 'dupa', ...optionalParams: any[]) {}
+export class MyLogger implements LoggerService {
+    private pathToLogFile = 'src/logger/logsFiles/logs.txt';
+    private pathToErrorFile = 'src/logger/errorFiles/errors.txt';
+    private currentTime: Date;
 
-//     /**
-//      * Write an 'error' level log.
-//      */
-//     error(message: any, ...optionalParams: any[]) {}
+    public async error(message: string, ...optional: string[]): Promise<void> {
+        await this.write('Error ', Color.Red, message, optional[0]);
+        await writeFile(this.pathToErrorFile, message, { flag: 'a+' });
+    }
 
-//     /**
-//      * Write a 'warn' level log.
-//      */
-//     warn(message: any, ...optionalParams: any[]) {}
+    public async warn(message: string, ...optional: string[]): Promise<void> {
+        await this.write('Warn ', Color.Yellow, message, optional[0]);
+        await writeFile(this.pathToLogFile, message, { flag: 'a+' });
+    }
 
-//     /**
-//      * Write a 'debug' level log.
-//      */
-//     debug?(message: any, ...optionalParams: any[]) {}
+    public async log(message: string, ...optional: string[]): Promise<void> {
+        await this.write('Log ', Color.Green, message, optional[0]);
+        await writeFile(this.pathToLogFile, message, { flag: 'a+' });
+    }
 
-//     /**
-//      * Write a 'verbose' level log.
-//      */
-//     verbose?(message: any, ...optionalParams: any[]) {}
-// }
-// @Injectable({ scope: Scope.TRANSIENT })
-// export class MyLogger extends ConsoleLogger {
-//     customLog() {
-//         this.log('Please feed the cat!');
-//     }
-// }
+    public async verbose(
+        message: string,
+        ...optional: string[]
+    ): Promise<void> {
+        await this.write('Verbose', Color.White, message, optional[0]);
+    }
 
-export class MyLogger extends ConsoleLogger {
-    // customLog(req) {
+    public async debug(message: string, ...optional: string[]): Promise<void> {
+        await this.write('Debug ', Color.White, message, optional[0]);
+    }
 
-        // res.on('close', () => {
-        //     const { statusCode } = res;
+    private async write(
+        Type: string,
+        color: string,
+        message: string,
+        optional: string,
+    ): Promise<void> {
+        this.currentTime = new Date();
 
-            // this.log(
-            //     `Method: ${req.method}, Url: ${req.protocol}://${req.get('Host')}${req.originalUrl}, query parameters: ${JSON.stringify(
-            //         req.query,
-            //     )}, body: ${JSON.stringify(
-            //         req.body,
-            //     )},
-            //     `,
-            // );
+        const pidStr = `[Logger] ${process.pid} -`;
+        const timeStr = this.currentTime.toLocaleString();
+        const serviceName = `[${optional}]`;
 
-        // });
-    // }
-    // customLog(request, response) {
-    //     // use(request: Request, response: Response): void {
-    //     const { body, method } = request;
-    //     // const userAgent = request.get('user-agent') || '';
-
-    //     this.log(`method:${method}, body: ${JSON.stringify(body)} `);
-    // }
-    // this.log('susssss');
+        console.log(
+            `${color}${pidStr}`,
+            `${Color.White}${timeStr}`,
+            `${color}${Type}`,
+            `${Color.Yellow}${serviceName}`,
+            `${color}${message}`,
+        );
+    }
 }
-
-//     error(message: any, stack?: string, context?: string) {
-//         // add your tailored logic here
-//         // super.error(...arguments);
-//     }
+export const enum Color {
+    Green = '\x1b[32m',
+    Yellow = '\x1b[33m',
+    Red = '\x1b[31m',
+    White = '\x1b[0m',
+}

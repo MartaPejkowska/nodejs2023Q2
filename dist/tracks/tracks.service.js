@@ -57,7 +57,7 @@ let TracksService = class TracksService {
         });
         console.log('track one', track);
         if (!track) {
-            throw new common_1.NotFoundException('Not found');
+            throw new common_1.NotFoundException('Track not found');
         }
         return track;
     }
@@ -67,7 +67,7 @@ let TracksService = class TracksService {
             where: { id: id },
         });
         if (!track) {
-            throw new common_1.NotFoundException('Not found');
+            throw new common_1.NotFoundException('Track not found');
         }
         const updatedTrack = Object.assign({}, track);
         if (updateTrackDto.name) {
@@ -105,7 +105,7 @@ let TracksService = class TracksService {
             where: { id: id },
         });
         if (!track) {
-            throw new common_1.NotFoundException('Not found');
+            throw new common_1.NotFoundException('Track not found');
         }
         await this.trackRepository.remove(track);
         return `Removed track with id: ${id}`;

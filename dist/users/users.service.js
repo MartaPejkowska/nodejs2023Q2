@@ -35,10 +35,11 @@ const logger_service_1 = require("../logger/logger.service");
 const bcrypt = require("bcrypt");
 let UsersService = class UsersService {
     constructor() {
-        this.logger = new logger_service_1.MyLogger('User');
+        this.logger = new logger_service_1.MyLogger();
     }
     async findAll() {
         const users = await this.userRepository.find();
+        this.logger.log('Return all users');
         return users;
     }
     async findOne(id) {
@@ -47,13 +48,12 @@ let UsersService = class UsersService {
             where: { id: id },
         });
         if (!user) {
-            throw new common_1.NotFoundException('Not found');
+            throw new common_1.NotFoundException('User not found');
         }
         const { password } = user, userWP = __rest(user, ["password"]);
         return userWP;
     }
     async create(createUserDto) {
-        console.log('in create');
         if (!createUserDto.login || !createUserDto.password) {
             throw new common_1.BadRequestException('Login and password are required');
         }
@@ -67,7 +67,6 @@ let UsersService = class UsersService {
         };
         await this.userRepository.save(user);
         const { password } = user, userWP = __rest(user, ["password"]);
-        console.log(user);
         return userWP;
     }
     async update(id, body) {
@@ -76,19 +75,17 @@ let UsersService = class UsersService {
             where: { id: id },
         });
         if (!user) {
-            throw new common_1.NotFoundException('Not found');
+            throw new common_1.NotFoundException('User not found');
         }
-        if (!body.oldPassword ||
-            !body.newPassword ||
-            typeof body.newPassword !== 'string') {
+        if (typeof body.newPassword !== 'string') {
             throw new common_1.BadRequestException('Old password and new password are required and must be a string');
         }
-        console.log(bcrypt.compareSync(user.password, body.oldPassword));
-        if (bcrypt.compareSync(user.password, body.oldPassword)) {
+        if (bcrypt.compareSync(body.oldPassword, user.password)) {
             user.password = body.newPassword;
             user.updatedAt = new Date().getTime();
             user.version++;
             await this.userRepository.save(user);
+            console.log(user);
             const { password } = user, userWP = __rest(user, ["password"]);
             return userWP;
         }
@@ -102,7 +99,7 @@ let UsersService = class UsersService {
             where: { id: id },
         });
         if (!user) {
-            throw new common_1.NotFoundException('Not found');
+            throw new common_1.NotFoundException('User not found');
         }
         else {
             await this.userRepository.remove(user);

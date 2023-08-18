@@ -14,16 +14,18 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MyLogger } from 'src/logger/logger.service';
 import * as bcrypt from 'bcrypt'
+import { error } from 'console';
 
 @Injectable()
 export class UsersService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>;
 
-    private readonly logger = new MyLogger('User');
+    private readonly logger = new MyLogger();
 
     async findAll(): Promise<UserEntity[]> {
         const users = await this.userRepository.find();
+        this.logger.log('Return all users')
         return users;
     }
 
@@ -34,14 +36,14 @@ export class UsersService {
         });
 
         if (!user) {
-            throw new NotFoundException('Not found');
+            throw new NotFoundException('User not found')
         }
         const { password, ...userWP } = user;
         return userWP;
     }
 
     async create(@Body() createUserDto: CreateUserDto) {
-        console.log('in create');
+
         if (!createUserDto.login || !createUserDto.password) {
             throw new BadRequestException('Login and password are required');
         }
@@ -55,7 +57,6 @@ export class UsersService {
         };
         await this.userRepository.save(user);
         const { password, ...userWP } = user;
-        console.log(user);
         return userWP;
     }
 
@@ -66,12 +67,12 @@ export class UsersService {
         });
 
         if (!user) {
-            throw new NotFoundException('Not found');
+            throw new NotFoundException('User not found');
         }
 
         if (
-            !body.oldPassword ||
-            !body.newPassword ||
+            // !body.oldPassword ||
+            // !body.newPassword ||
             // typeof body.oldPassword !== 'string' ||
             typeof body.newPassword !== 'string'
         ) {
@@ -79,14 +80,15 @@ export class UsersService {
                 'Old password and new password are required and must be a string',
             );
         }
-        console.log(bcrypt.compareSync(user.password, body.oldPassword))
-        if (bcrypt.compareSync(user.password, body.oldPassword)) {
+
+        if (bcrypt.compareSync(body.oldPassword, user.password)) {
 
             user.password = body.newPassword;
             user.updatedAt = new Date().getTime();
             user.version++;
 
             await this.userRepository.save(user);
+            console.log(user)
             const { password, ...userWP } = user;
             return userWP;
         } else {
@@ -101,7 +103,7 @@ export class UsersService {
         });
 
         if (!user) {
-            throw new NotFoundException('Not found');
+            throw new NotFoundException('User not found');
         } else {
             await this.userRepository.remove(user);
         }

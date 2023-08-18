@@ -45,7 +45,7 @@ let ArtistService = class ArtistService {
             where: { id: id },
         });
         if (!artist) {
-            throw new common_1.NotFoundException('Not found');
+            throw new common_1.NotFoundException('Artist not found');
         }
         return artist;
     }
@@ -55,7 +55,7 @@ let ArtistService = class ArtistService {
             where: { id: id },
         });
         if (!artist) {
-            throw new common_1.NotFoundException('Not found');
+            throw new common_1.NotFoundException('Artist not found');
         }
         const updatedArtist = Object.assign({}, artist);
         if (updateArtistDto.name) {
@@ -83,7 +83,7 @@ let ArtistService = class ArtistService {
             where: { id: id },
         });
         if (!artist) {
-            throw new common_1.NotFoundException('Not found');
+            throw new common_1.NotFoundException('Artist not found');
         }
         await this.albumRepository.update({ artistId: id }, { artistId: null });
         await this.trackRepository.update({ artistId: id }, { artistId: null });

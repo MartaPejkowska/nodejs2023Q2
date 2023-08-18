@@ -57,7 +57,7 @@ export class ArtistService {
             where: { id: id },
         });
         if (!artist) {
-            throw new NotFoundException('Not found');
+            throw new NotFoundException('Artist not found');
         }
         return artist;
     }
@@ -69,7 +69,7 @@ export class ArtistService {
         });
 
         if (!artist) {
-            throw new NotFoundException('Not found');
+            throw new NotFoundException('Artist not found');
         }
 
         // if (
@@ -107,7 +107,7 @@ export class ArtistService {
             where: { id: id },
         });
         if (!artist) {
-            throw new NotFoundException('Not found');
+            throw new NotFoundException('Artist not found');
         }
         await this.albumRepository.update({ artistId: id }, { artistId: null });
         await this.trackRepository.update({ artistId: id }, { artistId: null });
