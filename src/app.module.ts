@@ -1,10 +1,42 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { UsersModule } from './users/users.module';
+import { ArtistModule } from './artist/artist.module';
+import { TracksModule } from './tracks/tracks.module';
+import { AlbumsModule } from './albums/albums.module';
+import { FavouritesModule } from './favourites/favourites.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+
+import { LoggerMiddleware } from './logger/loggerMiddleware';
+import { AuthModule } from './authorization/auth.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+    imports: [
+        AuthModule,
+        UsersModule,
+        ArtistModule,
+        TracksModule,
+        AlbumsModule,
+        FavouritesModule,
+        ConfigModule.forRoot({ isGlobal: true }),
+        TypeOrmModule.forRoot({
+            type: 'postgres',
+            host: process.env.PG_HOST,
+            port: +process.env.PG_PORT,
+            username: process.env.PG_USER,
+            password: process.env.POSTGRES_PASSWORD,
+            database: process.env.PG_DATABASE,
+            autoLoadEntities: true,
+            synchronize: true,
+        }),
+    ],
+    controllers: [AppController],
+    providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(LoggerMiddleware).forRoutes('*');
+    }
+}

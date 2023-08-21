@@ -1,0 +1,42 @@
+version: '3.0'
+
+services:
+  nest_app:
+    container_name: nest_app
+    image: nodejs2023q2
+    build: .
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      - DB_TYPE= postgres
+      - PG_HOST= ${PG_HOST}
+      - PG_USER= ${PG_USER}
+      - PG_PASSWORD= ${PG_PASSWORD}
+      - PG_DB= ${PG_DATABASE}
+      - PG_PORT= ${PG_PORT}
+    depends_on:
+      - postgres
+    restart: always
+
+
+  postgres:
+    container_name: postgres
+    image: postgres:15
+    build:
+      dockerfile: Dockerfile
+      context: ./src/db
+    ports:
+      - ${PG_PORT}:${PG_PORT}
+    environment:
+      - PG_USER= ${PG_USER}
+      - POSTGRES_PASSWORD= ${POSTGRES_PASSWORD}
+      - PG_DB= ${PG_DATABASE}
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - pglogs:/var/log/postsgresql
+
+volumes:
+   pgdata: {}
+   pglogs: {}
+
