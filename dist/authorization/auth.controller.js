@@ -25,6 +25,9 @@ let AuthController = class AuthController {
     login(body) {
         return this.authService.login(body);
     }
+    refresh(refreshToken) {
+        return this.authService.refresh(refreshToken);
+    }
 };
 __decorate([
     (0, common_1.Inject)(auth_service_1.AuthService),
@@ -47,6 +50,15 @@ __decorate([
     __metadata("design:paramtypes", [create_user_dto_1.CreateUserDto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "login", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Post)('refresh'),
+    (0, common_1.UseInterceptors)(common_1.ClassSerializerInterceptor),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "refresh", null);
 AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     (0, swagger_1.ApiTags)('auth')

@@ -29,6 +29,9 @@ export class UserEntity {
     @Column('bigint', { nullable: true })
     updatedAt: number;
 
+    @Exclude()
+    refresh_token?: string;
+
     constructor(partial: Partial<UserEntity>) {
         Object.assign(this, partial);
     }

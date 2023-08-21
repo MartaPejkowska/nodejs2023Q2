@@ -8,3 +8,6 @@ npm-debug.log
 .vscode
 test
 
+dist
+src/db
+

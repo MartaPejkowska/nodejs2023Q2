@@ -36,9 +36,10 @@ export class AuthController {
         return this.authService.login(body);
     }
 
-    // @Post('refresh')
-    // @UseInterceptors(ClassSerializerInterceptor)
-    // private refresh(@Req() { user }: Request): Promise<string | never> {
-    //     return this.authService.refresh(<UserEntity>user);
-    // }
+    @Public()
+    @Post('refresh')
+    @UseInterceptors(ClassSerializerInterceptor)
+    private refresh(@Req() refreshToken: Request) {
+        return this.authService.refresh(refreshToken);
+    }
 }

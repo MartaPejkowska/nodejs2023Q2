@@ -33,8 +33,63 @@ let AuthHelper = class AuthHelper {
         });
         return { accessToken: token };
     }
+    async generateRefreshToken(user) {
+        const refreshToken = await this.jwt.signAsync({ id: user.id, login: user.login }, {
+            secret: process.env.JWT_SECRET_REFRESH_KEY,
+            expiresIn: +process.env.TOKEN_REFRESH_EXPIRE_TIME,
+        });
+        return { refreshToken: refreshToken };
+    }
+    async generateBothTokens(user) {
+        const [accessToken, refreshToken] = await Promise.all([
+            await this.jwt.signAsync({ id: user.id, login: user.login }, {
+                secret: process.env.JWT_SECRET_KEY,
+                expiresIn: +process.env.TOKEN_EXPIRE_TIME,
+            }),
+            await this.jwt.signAsync({ id: user.id, login: user.login }, {
+                secret: process.env.JWT_SECRET_REFRESH_KEY,
+                expiresIn: +process.env.TOKEN_REFRESH_EXPIRE_TIME,
+            }),
+        ]);
+        const tokens = { accessToken, refreshToken };
+        return tokens;
+    }
     isPasswordValid(password, userPassword) {
         return bcrypt.compareSync(password, userPassword);
+    }
+    async validateRefreshToken(refreshToken) {
+        try {
+            const decoded = this.jwt.verify(refreshToken);
+            if (!decoded) {
+                throw new common_1.HttpException('Forbidden', common_1.HttpStatus.FORBIDDEN);
+            }
+            console.log(decoded);
+            const user = await this.validateUser(decoded);
+            console.log(user);
+            if (!user) {
+                throw new common_1.UnauthorizedException();
+            }
+            const isRefreshTokenMatching = await bcrypt.compare(refreshToken, user.refresh_token);
+            if (!isRefreshTokenMatching) {
+                throw new common_1.UnauthorizedException('Invalid token');
+            }
+            await this.jwt.verifyAsync(refreshToken, {
+                secret: process.env.JWT_SECRET_REFRESH_KEY,
+            });
+            return true;
+        }
+        catch (_a) {
+            throw new common_1.UnauthorizedException('Invalid token');
+        }
+    }
+    async updateRefreshtoken(userId) {
+        const user = await this.userRepository.findOne({
+            where: {
+                id: userId,
+            },
+        });
+        const newRefreshToken = await this.generateRefreshToken(user);
+        return await (user.refresh_token = newRefreshToken.refreshToken);
     }
 };
 __decorate([

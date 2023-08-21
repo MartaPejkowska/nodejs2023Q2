@@ -4,4 +4,5 @@ export declare class AuthController {
     private readonly authService;
     register(body: CreateUserDto): Promise<Partial<UserEntity> | never>;
     private login;
+    private refresh;
 }

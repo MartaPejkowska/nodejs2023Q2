@@ -20,6 +20,7 @@ export declare class UsersController {
         version: number;
         createdAt: number;
         updatedAt: number;
+        refresh_token?: string;
     }>;
     delete(id: string): Promise<void>;
 }

@@ -8,7 +8,7 @@ class MyLogger {
         this.pathToErrorFile = 'src/logger/errorFiles/errors.txt';
     }
     async error(message, ...optional) {
-        await this.write('Error ', "\u001B[31m", JSON.parse(message), optional[0]);
+        await this.write('Error ', "\u001B[31m", message, optional[0]);
         await (0, promises_1.writeFile)(this.pathToErrorFile, message, { flag: 'a+' });
     }
     async warn(message, ...optional) {

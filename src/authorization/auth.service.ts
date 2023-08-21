@@ -24,11 +24,7 @@ export class AuthService {
     @Inject(AuthHelper)
     private readonly helper: AuthHelper;
 
-    // @Inject(ConfigService)
-    // private config: ConfigService;
-
     async register(body: CreateUserDto): Promise<Partial<UserEntity> | never> {
-
         // const user: UserEntity = await this.userRepository.findOneBy({
         //     login,
         // });
@@ -63,7 +59,7 @@ export class AuthService {
             createdAt: new Date().getTime(),
             updatedAt: new Date().getTime(),
         };
-        console.log(newUser)
+        console.log(newUser);
 
         await this.userRepository.save(newUser);
         const { password, ...userWP } = newUser;
@@ -100,11 +96,17 @@ export class AuthService {
             throw new ForbiddenException('Wrong password');
         }
 
-        return this.helper.generateToken(user);
+        return await this.helper.generateBothTokens(user);
     }
 
-    // public async refresh(user: UserEntity): Promise<string> {
+    public async refresh(refreshToken) {
+        const isValid = await this.helper.validateRefreshToken(refreshToken);
 
-    //     return this.helper.generateToken(user);
-    // }
+        console.log(isValid);
+        if (isValid) {
+            const user = await this.helper.decode(refreshToken);
+            console.log(user);
+            // return await this.helper.updateRefreshtoken(user);
+        }
+    }
 }

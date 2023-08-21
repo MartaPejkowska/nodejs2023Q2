@@ -25,8 +25,8 @@ import { AuthModule } from './authorization/auth.module';
             type: 'postgres',
             host: process.env.PG_HOST,
             port: +process.env.PG_PORT,
-            username: process.env.PG_USERNAME,
-            password: process.env.PG_PASSWORD,
+            username: process.env.PG_USER,
+            password: process.env.POSTGRES_PASSWORD,
             database: process.env.PG_DATABASE,
             autoLoadEntities: true,
             synchronize: true,
@@ -40,4 +40,3 @@ export class AppModule implements NestModule {
         consumer.apply(LoggerMiddleware).forRoutes('*');
     }
 }
-// export class AppModule {}

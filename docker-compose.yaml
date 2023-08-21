@@ -10,7 +10,7 @@ services:
     environment:
       - DB_TYPE= postgres
       - PG_HOST= ${PG_HOST}
-      - PG_USER= ${PG_USERNAME}
+      - PG_USER= ${PG_USER}
       - PG_PASSWORD= ${PG_PASSWORD}
       - PG_DB= ${PG_DATABASE}
       - PG_PORT= ${PG_PORT}
@@ -21,12 +21,15 @@ services:
 
   postgres:
     container_name: postgres
-    image: postgres:12
+    image: postgres:15
+    build:
+      dockerfile: Dockerfile
+      context: ./src/db
     ports:
       - ${PG_PORT}:${PG_PORT}
     environment:
-      - PG_USER= ${PG_USERNAME}
-      - POSTGRES_PASSWORD= ${PG_PASSWORD}
+      - PG_USER= ${PG_USER}
+      - POSTGRES_PASSWORD= ${POSTGRES_PASSWORD}
       - PG_DB= ${PG_DATABASE}
     restart: always
     volumes:
@@ -36,3 +39,4 @@ services:
 volumes:
    pgdata: {}
    pglogs: {}
+

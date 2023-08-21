@@ -14,7 +14,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MyLogger } from 'src/logger/logger.service';
 import * as bcrypt from 'bcrypt'
-import { error } from 'console';
+
 
 @Injectable()
 export class UsersService {

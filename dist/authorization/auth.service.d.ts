@@ -6,5 +6,7 @@ export declare class AuthService {
     register(body: CreateUserDto): Promise<Partial<UserEntity> | never>;
     login(body: CreateUserDto): Promise<{
         accessToken: string;
+        refreshToken: string;
     }>;
+    refresh(refreshToken: any): Promise<void>;
 }

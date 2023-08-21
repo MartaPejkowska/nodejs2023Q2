@@ -68,7 +68,15 @@ let AuthService = class AuthService {
         if (!isPasswordValid) {
             throw new common_1.ForbiddenException('Wrong password');
         }
-        return this.helper.generateToken(user);
+        return await this.helper.generateBothTokens(user);
+    }
+    async refresh(refreshToken) {
+        const isValid = await this.helper.validateRefreshToken(refreshToken);
+        console.log(isValid);
+        if (isValid) {
+            const user = await this.helper.decode(refreshToken);
+            console.log(user);
+        }
     }
 };
 __decorate([

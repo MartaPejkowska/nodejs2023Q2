@@ -48,6 +48,10 @@ __decorate([
     (0, typeorm_1.Column)('bigint', { nullable: true }),
     __metadata("design:type", Number)
 ], UserEntity.prototype, "updatedAt", void 0);
+__decorate([
+    (0, class_transformer_1.Exclude)(),
+    __metadata("design:type", String)
+], UserEntity.prototype, "refresh_token", void 0);
 UserEntity = __decorate([
     (0, typeorm_1.Entity)(),
     __metadata("design:paramtypes", [Object])
